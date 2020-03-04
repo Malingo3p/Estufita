@@ -1,0 +1,3192 @@
+Actor EnemyFlashSpawner : EffectBase
+{
+	Scale 0.75
+	States
+	{
+	Spawn:
+		TNT1 AAAAAAAAAA 0 A_SpawnItemEx(Q2BulletPuffParticle,FRandom(0,4),0,FRandom(-4,4),FRandom(0,0.75),0,FRandom(-1,-0.25),Random(1,360),SXF_TRANSFERSCALE)
+		TNT1 A 0 A_SpawnItem(Q2BulletPuffFlash)
+		Stop
+	}
+}
+Actor DestroyableBodyThing // this thing does not work on Zandronum
+{
+	Radius 25
+	Height 10
+	Health 60
+	Mass 0x7fffffff
+	+NOTARGETSWITCH
+	+NOTAUTOAIMED
+	+CORPSE
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_Warp(AAPTR_MASTER,0,0,0,0,WARPF_NOCHECKPOSITION,1)
+		Stop
+		TNT1 A 0 A_SetShootable
+		TNT1 A 1 A_JumpIfInTargetInventory(ResurrectedToken,1,"Null")
+		Loop
+	Death:
+	Crush:
+		TNT1 A 0 A_RemoveMaster
+		TNT1 AAAAAAA 0 A_SpawnItemEx(Q2Gib,Random(0,40),0,5,Random(0,1),0,2,Random(1,360))
+		TNT1 A 5 A_XScream
+		Stop
+	}
+}
+Actor ResurrectedToken : InvBoolean {}
+Actor Q2SoldierBase : Zombieman
+{
+	Speed 11
+	Health 40 
+	Mass 100
+	AttackSound ""
+	SeeSound "Q2Soldier/Sight"
+	ActiveSound "Q2Soldier/Active"
+	PainSound "Q2Soldier/Pain"
+	DeathSound "Q2Soldier/Death"
+	DropItem ""
+	Obituary "%o fue chancleteado por tu mamasita."
+	GibHealth -30
+	States
+	{
+	Spawn:
+		GRD1 A 1 A_Jump(256,"Idle1","Idle2")
+		Loop
+	Idle1:
+		GRS2 ABCDEFGHIJKLMNOPQRSTUVW 4 A_Look
+		GRS2 X 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		GRS2 X 4 A_Look
+		GRS2 YZ 4 A_Look
+		GRS3 ABCDEFGHIJKLM 4 A_Look
+		Goto Idle2
+	Idle2:
+		GRD1 ABCDEFGHIJKLMNOPQRSTUVWXYZ 4 A_Look
+		GRS1 ABCD 4 A_Look
+        TNT1 A 0 A_Jump (54, "Idle1")
+        Loop
+	See:
+		GRR1 A 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_TakeInventory(Clip)
+		GRR1 ABCDEFG 3 A_Chase
+		Loop
+	Missile:
+		TNT1 A 0 A_JumpIf(Mass==101,"BlasterATK")
+		TNT1 A 0 A_JumpIf(Mass==102,"ShotgunATK")
+		TNT1 A 0 A_JumpIf(Mass==103,"MachinegunATK")
+		TNT1 A 0 A_JumpIf(Mass==104,"IonRipperATK")
+		TNT1 A 0 A_JumpIf(Mass==105,"HyperBlasterATK")
+		TNT1 A 0 A_JumpIf(Mass==106,"LaserATK")
+		TNT1 A 1 A_SetMass(Random(101,106))
+		Goto Pain // 404 attack not found
+	BlasterATK:
+		TNT1 A 0 A_Jump(256,"Blaster", "Blaster2")
+		Stop
+	Blaster:
+		GRDA ABCD 5 A_FaceTarget
+		GRDA E 0 A_CustomMissile(LightGuardBlaster,32,10,Random(-3,3),CMF_OFFSETPITCH,Random(-3,3))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRDA EFGHPQR 4 A_FaceTarget(10)
+		Goto See
+	Blaster2:
+		GRD2 HI 5 A_FaceTarget
+		GRD2 J 0 A_CustomMissile(LightGuardBlaster,32,10,Random(-3,3),CMF_OFFSETPITCH,Random(-3,3))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 JKLMPQRS 4 A_FaceTarget(10)
+		Goto See
+	ShotgunATK:
+		TNT1 A 0 A_Jump(256,"Shotgun", "Shotgun2")
+		Stop
+	Shotgun:
+		GRDA ABCD 5 A_FaceTarget
+		GRDA E 0 A_CustomBulletAttack(8,8,5,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,32,12,38)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRDA EFGHIJK 4 A_FaceTarget(10)
+		GRDA L 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		GRDA LMNOPQR 4 A_FaceTarget(10)
+		Goto See
+	Shotgun2:
+		GRD2 HI 5 A_FaceTarget
+		GRD2 J 0 A_CustomBulletAttack(8,8,5,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 JKLM 4 A_FaceTarget(10)
+		GRD2 N 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		GRD2 NOPQRS 4 A_FaceTarget(10)
+		Goto See
+	MachineGunATK:
+        TNT1 A 0 A_Jump(256,"MachineGun", "MachineGun2")
+		Stop
+	Machinegun:
+		GRD2 H 10 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 JLM 4 A_FaceTarget(10)
+		Goto See
+	MachineGun2:
+		GRD2 H 10 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 I 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"BulletPuff",0,CBAF_NORANDOM)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD2 I 4 A_FaceTarget
+		GRD2 JLM 4 A_FaceTarget(10)
+		Goto See
+	IonRipperATK:
+		TNT1 A 0 A_Jump(256,"IonRipper", "IonRipper2")
+		Stop
+	IonRipper:
+		GRDA ABCD 4 A_FaceTarget
+        GRDA E 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+        GRDA E 4 A_CustomMissile(RipperGuardProjectile,42,10)
+        GRDA F 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+        GRDA F 4 A_CustomMissile(RipperGuardProjectile,42,10)
+        GRDA G 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+		GRDA HPQR 3 A_FaceTarget(10)
+		Goto See
+	IonRipper2:
+		GRD2 HI 4 A_FaceTarget
+        GRD2 I 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+        GRD2 I 4 A_CustomMissile(RipperGuardProjectile,32,10,0)
+        GRD2 I 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+        GRD2 J 4 A_CustomMissile(RipperGuardProjectile,32,10,0)
+        GRD2 J 0 A_PlaySound("Q2Soldier/Blaster",CHAN_WEAPON)
+        GRD2 K 4 A_CustomMissile(RipperGuardProjectile,32,10,0)
+		GRD2 LMPQRS 4 A_FaceTarget(10)
+		Goto See
+	HyperBlasterATK:
+		TNT1 A 0 A_Jump(256,"HyperBlasterReady", "HyperBlaster2Ready")
+		Stop
+	HyperBlasterReady:
+		GRDA A 4 A_FaceTarget
+		GRDA ABC 4 A_FaceTarget
+		Goto HyperBlaster1
+	HyperBlaster1:
+        GRDA D 4 A_FaceTarget
+        TNT1 A 0 A_PlaySound("Weapons/HyperBlasterLoop",CHAN_5,0.75)
+        GRDA I 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,42)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRDA E 4 A_CustomMissile(HBGuardProjectile,42,10)
+        GRDA I 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,42)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRDA F 3 A_CustomMissile(HBGuardProjectile,42,10)
+        GRDA G 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,42)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRDA G 4 A_CustomMissile(HBGuardProjectile,42,10)
+        GRDA D 3 A_FaceTarget
+        TNT1 A 0 A_Jump (64, "HyperBlaster1Stop")
+        TNT1 A 0 A_MonsterRefire(40,2)
+        Goto HyperBlaster1
+	HyperBlaster1Stop:
+		TNT1 A 0 A_PlaySound("Weapons/HyperBlasterStop",CHAN_5)
+		GRDA HIJK 4 A_FaceTarget(10)
+		GRDA L 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		GRDA LMNOPQR 4 A_FaceTarget(10)
+		Goto See
+	HyperBlaster2Ready:
+		GRD2 HI 4 A_FaceTarget
+		Goto HyperBlaster2
+    HyperBlaster2:
+        TNT1 A 0 A_PlaySound("Weapons/HyperBlasterLoop",CHAN_5,0.75)
+        GRD2 I 4 A_FaceTarget
+        GRD2 I 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRD2 I 3 A_CustomMissile(HBGuardProjectile,32,10,0)
+        GRD2 I 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRD2 J 4 A_CustomMissile(HBGuardProjectile,32,10,0)
+        GRD2 J 0 A_PlaySound("Tank/Attack2",CHAN_WEAPON)
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,14,11,29)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRD2 K 3 A_CustomMissile(HBGuardProjectile,32,10,0)
+        GRD2 LM 3 A_FaceTarget(10)
+        TNT1 A 0 A_Jump (64, "HyperBlaster2Stop")
+        TNT1 A 0 A_MonsterRefire(40,2)
+        Goto HyperBlaster2
+	 HyperBlaster2Stop:
+		TNT1 A 0 A_PlaySound("Weapons/HyperBlasterStop",CHAN_5)
+		GRD2 M 4 A_FaceTarget(10)
+		GRD2 N 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		GRD2 NOPQRS 4 A_FaceTarget(10)
+		Goto See
+	LaserATK:
+        TNT1 A 0 A_Jump(256,"Laser", "Laser2")
+		Stop
+	Laser:	
+		GRD2 H 10 A_FaceTarget
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 4 A_FaceTarget
+		GRD2 JLM 4 A_FaceTarget(10)
+		Goto See
+	Laser2:
+		GRD2 H 10 A_FaceTarget
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 2 A_CustomRailgun(1+Random(1,3),14,11,29,RGF_SILENT|RGF_NOPIERCING,1,0,"Q2BulletPuff",0,0,8129,0,3,0,"RedLaserBeam",-6)
+		GRD2 I 4 A_FaceTarget
+		GRD2 JLM 4 A_FaceTarget(10)
+		Goto See
+	Pain:
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+	    GRD3 A 4
+		GRD3 ABCDE 3
+		Goto See
+	Pain2:
+	    GRD3 F 4
+		GRD3 FGHIJKL 3
+		Goto See
+	Pain3:
+	    GRD3 M 4
+		GRD3 "MNOPQRSTUVXYZ[^]" 4
+		Goto See
+	Pain.Explosion:
+	    TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		GRD4 A 4
+		GRD4 ABCDEFGHIJKLMNOPQ 4
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_Jump(256,"Death1","Death2","Death3","Death4","Death5","Death6","Death7","Death8","Death9")
+	Death1:
+		GR12 A 4
+		GR12 ABCDEFGHIJKLMN 3
+		GR12 OPQRSTUVWXYZ 4
+		GR13 ABCDEFGHIJKLMNOPQRSTUV 4
+		GR13 WXYZ 4
+		GR14 A -1
+		Stop
+	Death2:
+		GRD5 L 4
+		GRD5 "LMNOPQRSTUVWXYZ[^]" 4
+		GRD6 ABCD 4
+		GRD6 D 0 A_JumpIf(Mass==101,"Death2Blaster")
+		GRD6 D 0 A_JumpIf(Mass==102,"Death2Shotgun")
+		GRD6 D 0 A_JumpIf(Mass==103,"Death2MachineGun")
+		GRD6 D 0 A_JumpIf(Mass==104,"Death2IonRipper")
+		GRD6 D 0 A_JumpIf(Mass==105,"Death2HyperBlaster")
+		GRD6 D 0 A_JumpIf(Mass==106,"Death2Laser")		
+	Death2Blaster:
+		GRD6 D 0 A_CustomMissile(LightGuardBlaster,15,3,Random(-5,5),2,Random(-5,5))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 DEF 4
+		GRD6 D 0 A_CustomMissile(LightGuardBlaster,15,3,Random(-5,5),2,Random(-5,5))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		Goto Death2Proceed
+	Death2Shotgun:
+		GRD6 D 0 A_CustomBulletAttack(8,8,5,2,"BulletPuff",1024,CBAF_AIMFACING)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,37,5,18)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 DEF 4
+		GRD6 G 0 A_CustomBulletAttack(8,8,5,2,"BulletPuff",1024,CBAF_AIMFACING)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,37,5,18)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		Goto Death2Proceed
+	Death2Machinegun:
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4
+		GRD6 D 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 D 4	
+		GRD6 EF 4
+		GRD6 G 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 G 4
+		GRD6 G 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 G 4
+		GRD6 G 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 G 4
+		GRD6 G 0 A_CustomBulletAttack(8,8,1,3,"BulletPuff",1024,CBAF_AIMFACING|CBAF_NORANDOM) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,39,5,18) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 G 4	
+		Goto Death2Proceed
+	Death2IonRipper:
+		GRD6 D 0 A_CustomMissile(RipperGuardProjectile,15,3,Random(-5,5),2,Random(-5,5))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GRD6 DEF 4
+		GRD6 D 0 A_CustomMissile(RipperGuardProjectile,15,3,Random(-5,5),2,Random(-5,5))
+		TNT1 A 0 A_PlayWeaponSound("Q2Soldier/Blaster")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		Goto Death2Proceed
+    Death2HyperBlaster:
+        GRD6 D 0 A_CustomMissile(HBGuardProjectile,15,3,0,2)
+        TNT1 A 0 A_PlayWeaponSound("Tank/Attack2")
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,42)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        GRD6 DEF 4
+        GRD6 D 0 A_CustomMissile(HBGuardProjectile,15,3,0,2)
+        TNT1 A 0 A_PlayWeaponSound("Tank/Attack2")
+        TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,42)
+        TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+        Goto Death2Proceed
+	Death2Laser:
+		GRD6 D 0 
+		GRD6 DEF 4
+		Goto Death2Proceed
+	Death2Proceed:
+		GRD6 GHIJKLMNOPQ 4
+		GRD6 R -1
+		Stop
+	Death3:
+		GRD6 S 4
+		GRD6 "STUVWXYZ[^]" 4
+		GRD7 ABCDEFGHIJKLMNOPQ 4
+		GRD7 R -1
+		Stop
+	Death4:
+		GRD8 A 4
+		GRD8 ABCD 4
+		GRD8 EFGHIJKLMNOPQRSTUVWXYZ 3
+		GR10 A 3
+		GR10 BCDEFGHIJKLMNOPQR 4
+		GR10 S -1
+		Stop
+	Death5:
+		GRDC A 4
+		GRDC ABCDEFGHIJKL 6
+		GRDC M -1
+		Stop
+	Death6:
+		GRDC N 4
+		GRDC NOPQRSTUV 4
+		GRDC W -1
+		Stop
+	Death7:
+		GSD1 A 4
+		GSD1 ABCDEFGHIJKLMNOPQ 4
+		GSD1 Q -1
+		Stop
+	Death8:
+		GSD2 A 4
+		GSD2 ABCDEF 4
+		GSD2 F -1
+		Stop
+	Death9:
+		GSD3 A 4
+		GSD3 ABCDEFGHIJ 4
+		GSD3 J -1
+		Stop
+	XDeath:
+		TNT1 A 0 A_Fall
+		TNT1 A 5 A_SpawnItem(Q2GibSpawner)
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	Crush:
+		TNT1 AAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(40),0,5,Random(0,1),0,2,Random(1,360))
+		TNT1 A 5 A_XScream
+		Stop
+	}
+}
+//The 'mass' property specifies the type of attack
+Actor LightGuard : Q2SoldierBase 
+{ 
+    Health 20 
+    Mass 101 
+    Obituary "%o was Blasted by a \c[l6]Light \c[l5]Guard" 
+    Species "LTGuard" 
+	+NOINFIGHTSPECIES
+    DropItem "Q2LightGuardRandomSpawner" 16
+	Tag "\c[l6]Light \c[l5]Guard"
+	}
+
+Actor Q2LightGuardRandomSpawner : RandomSpawner
+{ DropItem "Q2Cell", 26
+  DropItem "Q2ArmorShardNoCount", 40 }
+
+Actor LightGuardBlaster : BlasterProjectile 
+{ 
+    Damage 3 
+    +STRIFEDAMAGE 
+    Speed 28 
+}
+
+Actor ShotgunGuard : Q2SoldierBase 
+{ 
+    Health 30 
+    Mass 102 
+    AttackSound "Q2Soldier/Shotgun" 
+	DropItem "Q2ShotgunGuardRandomSpawner"
+    Obituary "%o was gunned down by a \c[o6]Shotgun \ccGuard"
+	+NOINFIGHTSPECIES
+    Species "Guard" 
+	Tag "\c[o6]Shotgun \ccGuard"
+	States
+{ Spawn: 
+	TNT1 A 0
+	TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("GuardsAlwaysDrop") == 1, "AlwaysDrop")
+  SpawnLoop: 
+    GRD1 A 1 A_Jump(256,"Idle1","Idle2")
+    Loop 
+  AlwaysDrop:
+    TNT1 A 1
+	TNT1 A 0 A_SpawnItemEx(ShotgunGuardAD,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+	TNT1 A 0 A_ChangeFlag("CountKill", 0)
+	TNT1 A 0
+	Stop
+}}
+
+Actor ShotgunGuardAD : ShotgunGuard 
+{   DropItem "Q2ShotGun" 
+    DropItem "Q2ShotgunGuardRandomSpawner", 0
+	States
+{ 	Spawn:
+    GRD1 A 1 A_Jump(256,"Idle1","Idle2")
+    Loop 
+}}
+
+Actor Q2ShotgunGuardRandomSpawner : RandomSpawner
+{ DropItem "", 20
+  DropItem "", 30
+  DropItem "Q2Shell", 50
+  DropItem "Q2ShotGun", 50 }
+
+Actor MachinegunGuard : Q2SoldierBase 
+{ 
+    Mass 103 
+    Health 40  
+    AttackSound "Q2Soldier/Machinegun" 
+	DropItem "Q2MachinegunGuardRandomSpawner"
+    Obituary "%o was Machinegunned by a \c[d5]Machinegun \cmGuard"
+	+NOINFIGHTSPECIES
+    Species "SSGuard" 
+	Tag "\c[d5]Machinegun \cmGuard"
+	States
+{ Spawn: 
+	TNT1 A 0
+	TNT1 A 0 A_JumpIf(ACS_NamedExecuteWithResult("GuardsAlwaysDrop") == 1, "AlwaysDrop")
+  SpawnLoop: 
+    GRD1 A 1 A_Jump(256,"Idle1","Idle2")
+    Loop 
+  AlwaysDrop:
+    TNT1 A 1
+	TNT1 A 0 A_SpawnItemEx(MachinegunGuardAD,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION)
+	TNT1 A 0 A_ChangeFlag("CountKill", 0)
+	TNT1 A 0
+	Stop
+}}
+
+Actor MachinegunGuardAD : MachinegunGuard 
+{  DropItem "Q2MachineGun" 
+   DropItem "Q2MachinegunGuardRandomSpawner", 0
+   States
+{ 	Spawn:
+    GRD1 A 1 A_Jump(256,"Idle1","Idle2")
+    Loop 
+}}
+
+Actor Q2MachinegunGuardRandomSpawner : RandomSpawner
+{ DropItem "", 20
+  DropItem "", 30
+  DropItem "Q2Bullets", 50
+  DropItem "Q2MachineGun", 50 }
+
+Actor Infantry : Q2SoldierBase
+{
+	SeeSound "Infantry/Sight"
+	ActiveSound "Infantry/Active"
+	PainSound "Infantry/Pain"
+	DeathSound "Infantry/Death"
+	MeleeSound "Infantry/Melee"
+	MeleeDamage 4
+	PainChance 60
+	Health 100
+	Speed 11
+	DropItem ""
+	Mass 200
+	Obituary "%o was pumped full of lead by an \c[o6]Enforcer."
+	+NOINFIGHTSPECIES
+	GibHealth 60
+	DropItem Q2Bullets 120
+	Species "Enforcer"
+	Tag "\c[o6]Enforcer"
+	States
+	{
+	Spawn:
+		INF0 A 1 A_Jump(256,"Idle1","Idle2")
+		Loop
+	Idle1:
+		INF0 ABCDEFGHIJIHGFEDCBA 6 A_Look
+		TNT1 A 0 A_Jump (45, "Idle2")
+		Loop
+	Idle2:
+	    INS0 ABCD 4 A_Look
+		TNT1 A 0 A_PlaySound("Infantry/Idle",CHAN_VOICE)
+		INS0 EFGHIJKLMNOPQRSTUVWXYZ 4 A_Look
+		INS1 ABCDEFGHIJKLMNOPQRSTUVW 4 A_Look
+		Goto Idle1
+	See:
+		INF0 KLMNOPQR 3 A_Chase
+		Loop
+	Melee:
+		TNT1 A 0 A_FaceTarget
+		TNT1 A 0 A_Recoil(-5)
+		INF1 PQR 4 A_FaceTarget
+		INF1 S 0 A_PlayWeaponSound("Infantry/Attack2")
+		INF1 ST 4 A_FaceTarget
+		INF1 U 3 A_MeleeAttack
+		INF1 VW 3
+		Goto See
+	Missile:
+	    TNT1 A 0 A_Jump(128,"Missile2")
+		INF1 ABCD 3 A_FaceTarget
+		INF1 E 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		INF1 EFGHIJ 3 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+        TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 LMNO 4
+		INF0 K 3
+		Goto See
+	Missile2:
+		INF1 ABCD 3 A_FaceTarget
+		INF1 E 0 A_PlaySound("Infantry/Attack3",CHAN_WEAPON,0.6)
+		INF1 EFGHIJ 3 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+        TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 K 0 A_CustomBulletAttack(15,8,1,3*random(1,3),"Bulletpuff",0, CBAF_NORANDOM)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,30,8,35)
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		INF1 K 4 A_FaceTarget
+		INF1 LMNO 4
+		INF0 K 3
+		Goto See
+	Pain:
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2")
+	Pain1:
+		INF2 ABCDEF 6
+		Goto See
+	Pain2:
+		INF2 GHIJKL 6
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_NoBlocking
+		TNT1 A 0 A_Jump(256,"Death1","Death2","Death3")
+	Death1:
+		TNT1 A 0 A_PlaySound("Infantry/Death2",CHAN_VOICE)
+		INF3 ABCDEFGHIJKLMNOPQRS 4
+		INF3 T -1
+		Stop
+	Death2:
+		TNT1 A 0 A_PlaySound("Infantry/Death1",CHAN_VOICE)
+		INF4 ABCDEFGHI 4
+		INF4 J 4 A_CustomBulletAttack(0,0,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 K 0 A_SpawnItemEx(EnemyFlashSpawner,28,9,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+	    TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 K 4 A_CustomBulletAttack(-3,-1,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 L 0 A_SpawnItemEx(EnemyFlashSpawner,28,10,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 L 4 A_CustomBulletAttack(-8,-2,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 M 0 A_SpawnItemEx(EnemyFlashSpawner,24,13,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 M 4 A_CustomBulletAttack(-4,-4,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 N 0 A_SpawnItemEx(EnemyFlashSpawner,24,16,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 N 4 A_CustomBulletAttack(-6,-8,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 O 0 A_SpawnItemEx(EnemyFlashSpawner,25,20,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 O 4 A_CustomBulletAttack(-10,-10,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 P 0 A_SpawnItemEx(EnemyFlashSpawner,24,22,40) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 P 4 A_CustomBulletAttack(-15,-15,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 Q 0 A_SpawnItemEx(EnemyFlashSpawner,24,23,42) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 Q 4 A_CustomBulletAttack(-20,-20,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 R 0 A_SpawnItemEx(EnemyFlashSpawner,24,25,44) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 R 4 A_CustomBulletAttack(-30,-25,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 S 0 A_SpawnItemEx(EnemyFlashSpawner,22,27,46) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 S 4 A_CustomBulletAttack(-45,-30,1,3*random(1,3),"BulletPuff",1024,CBAF_AIMFACING|CBAF_EXPLICITANGLE|CBAF_NORANDOM) INF4 T 0 A_SpawnItemEx(EnemyFlashSpawner,20,28,48) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Infantry/Attack1")
+		INF4 TUVWXY 4
+		INF4 Z -1
+		Stop
+	Death3:
+		INF0 A 4 A_PlaySound("Infantry/Death2",CHAN_VOICE)
+		INF5 ABCDEFG 5
+		INF5 H -1
+		Stop
+	}
+}
+
+Actor Berserker : Q2SoldierBase
+{
+	SeeSound "Berserker/Sight"
+	ActiveSound "Berserker/Active"
+	PainSound "Berserker/Pain"
+	DeathSound "Berserker/Death"
+	Health 240
+	Speed 20
+	MeleeDamage 5
+	PainChance 60
+	Mass 200
+	Obituary "%o was hit by a \c[d5]Berserker."
+	Species "Berserker"
+	Tag "\c[d5]Berserker"
+	States
+	{
+	Spawn:
+		BRS0 ABCDE 6 A_Look
+		BRS0 A 0 A_Jump(64,1)
+		Loop
+		BRS0 F 0 A_PlayWeaponSound("Berserker/Idle")
+		BRS0 FGHJIJKLMNOPQRSTUVWXY 6 A_Look
+		Goto Spawn+1
+	See:
+		BRS1 A 0 A_ChangeFlag(NOPAIN,0)
+		BRS1 ABCDEF 3 A_Chase
+		Loop
+	Melee:
+		TNT1 A 0 A_PlayWeaponSound("Berserker/Attack")
+		TNT1 A 0 A_Jump(128,"Melee2")
+		BRS1 GHI 4 A_FaceTarget
+		BRS1 J 0 A_Chase(2,"",CHF_DONTMOVE)
+		TNT1 A 0 A_Jump(256,3)
+		TNT1 A 0 A_VileAttack("",0,0,1,0.9,"Melee")
+		TNT1 A 0 A_MeleeAttack
+		BRS1 JKLMNO 4 A_FaceTarget
+		Goto See
+	Melee2:
+		BRS1 PQRS 3 A_FaceTarget
+		TNT1 A 0 A_MeleeAttack
+		BRS1 TUVWXYZ 4 A_FaceTarget
+		Goto See
+	Missile:
+		Stop
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		BRS2 ABCD 5
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_Jump(256,"Death1","Death2")
+	Death1:
+		BRS2 EFGHIJKLMNOP 4
+		BRS2 Q -1
+		Stop
+	Death2:
+		BRS2 RSTUVWX 4
+		BRS2 Y -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+
+Actor Gunner : Q2SoldierBase
+{
+	Health 175
+	PainChance 80
+	SeeSound "Gunner/Sight"
+	ActiveSound "Gunner/Active2"
+	PainSound "Gunner/Pain"
+	DeathSound "Gunner/Death"
+	AttackSound "Gunner/Attack2"
+	Obituary "%o was killed by a \cmGunner."
+	+NOINFIGHTSPECIES
+	Mass 250
+	GibHealth 60
+	DamageType Rocket
+	PainChance "Railgun", 250
+	DropItem "Q2GunnerRandomSpawner", 100
+	Species "Gunner"
+	Tag "\cmGunner"
+	States
+	{
+	Spawn:
+		GNR0 ABCDEFGHIJKLMNONMLKJIHGFEDCB 6 A_Look
+		GNR0 A 0 A_Jump(128,1)
+		Loop
+		GNR0 PQRSTUV 5 A_Look
+		GNR0 W 0 A_PlaySound("Gunner/Active",CHAN_WEAPON,0.75)
+		GNR0 W 6 A_Look
+		GNR0 "XYZ[^]" 5 A_Look
+		GNR1 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[" 5 A_Look
+		Loop
+	See:
+		GNR2 A 0 A_ChangeFlag(NOPAIN,0)
+		GNR2 ABCDEFGH 3 A_Chase
+		Loop
+	Missile:
+		TNT1 A 0 A_Jump(128,"Machinegun")
+		TNT1 A 0 A_Jump(128,"Machinegun2")
+		TNT1 A 0 A_JumpIfCloser(260,"Grenades")
+    Machinegun:
+		GNR3 HI 3 A_FaceTarget
+		GNR3 J 0 A_PlayWeaponSound("Gunner/Attack1")
+		GNR3 KLM 4 A_FaceTarget
+		GNR3 N 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 N 3 A_FaceTarget
+		GNR3 O 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 O 4 A_FaceTarget
+		GNR3 P 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 P 3 A_FaceTarget
+		GNR3 Q 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 Q 4 A_FaceTarget
+		GNR3 R 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 R 3 A_FaceTarget
+		GNR3 S 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 S 4 A_FaceTarget
+		GNR3 T 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 T 3 A_FaceTarget
+		GNR3 U 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 U 4 A_FaceTarget
+		GNR3 V 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 V 3 A_FaceTarget
+		GNR3 W 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 W 4 A_FaceTarget
+		GNR3 N 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 N 3 A_FaceTarget
+		GNR3 O 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 O 4 A_FaceTarget
+		GNR3 P 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 P 3 A_FaceTarget
+		GNR3 Q 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 Q 4 A_FaceTarget
+		GNR3 R 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 R 3 A_FaceTarget
+		GNR3 S 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 S 4 A_FaceTarget
+		GNR3 T 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 T 3 A_FaceTarget
+		GNR3 U 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 U 4 A_FaceTarget
+		GNR3 V 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 V 3 A_FaceTarget
+		GNR3 W 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 W 4 A_FaceTarget
+		GNR3 N 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 N 3 A_FaceTarget
+		GNR3 O 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 O 4 A_FaceTarget
+		GNR3 P 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 P 3 A_FaceTarget
+		GNR3 Q 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 Q 4 A_FaceTarget
+		GNR3 R 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 R 3 A_FaceTarget
+		GNR3 S 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 S 4 A_FaceTarget
+		GNR3 T 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 T 3 A_FaceTarget
+		GNR3 U 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 U 4 A_FaceTarget
+		GNR3 V 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 V 3 A_FaceTarget
+		GNR3 W 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 W 4 A_FaceTarget
+		GNR3 N 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 N 3 A_FaceTarget
+		GNR3 O 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 O 4 A_FaceTarget
+		GNR3 P 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 P 3 A_FaceTarget
+		GNR3 Q 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 Q 4 A_FaceTarget
+		GNR3 R 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 R 3 A_FaceTarget
+		GNR3 S 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 S 4 A_FaceTarget
+		GNR3 T 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 T 3 A_FaceTarget
+		GNR3 U 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 U 4 A_FaceTarget
+		GNR3 V 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 V 3 A_FaceTarget
+		GNR3 "XYZ[^]" 3
+		Goto See
+	Machinegun2:
+		GNR3 HI 3 A_FaceTarget
+		GNR3 J 0 A_PlayWeaponSound("Gunner/Attack1")
+		GNR3 KLM 4 A_FaceTarget
+		GNR3 N 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 N 3 A_FaceTarget
+		GNR3 O 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 O 4 A_FaceTarget
+		GNR3 P 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 P 3 A_FaceTarget
+		GNR3 Q 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 Q 4 A_FaceTarget
+		GNR3 R 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 R 3 A_FaceTarget
+		GNR3 S 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 S 4 A_FaceTarget
+		GNR3 T 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 T 3 A_FaceTarget
+		GNR3 U 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 U 4 A_FaceTarget
+		GNR3 V 0 A_CustomBulletAttack(8,8,1,2)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,34,5+FRandom(-1,1),45+FRandom(-1,1))
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		GNR3 V 3 A_FaceTarget
+		GNR3 "XYZ[^]" 3
+		Goto See
+	Grenades:
+		GNR2 IJ 3 A_FaceTarget
+		GNR2 K 0 A_CustomMissile(GunnerGrenade,32,-15)
+		TNT1 A 0 A_PlayWeaponSound("Gunner/Attack3")
+		GNR2 KLMJ 3 A_FaceTarget
+		GNR2 K 0 A_CustomMissile(GunnerGrenade,32,-15)
+		TNT1 A 0 A_PlayWeaponSound("Gunner/Attack3")
+		GNR2 KLMJ 3 A_FaceTarget
+		GNR2 K 0 A_CustomMissile(GunnerGrenade,32,-15)
+		TNT1 A 0 A_PlayWeaponSound("Gunner/Attack3")
+		GNR2 KLMJ 3 A_FaceTarget
+		GNR2 K 0 A_CustomMissile(GunnerGrenade,32,-15)
+		TNT1 A 0 A_PlayWeaponSound("Gunner/Attack3")
+		GNR2 KLMJI 3 A_FaceTarget
+		GNR2 NOPQRST 4
+		Goto See
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2")
+	Pain.Railgun:
+	    TNT1 A 0 A_Pain
+		GNR4 ABCDEFHI 6
+		Goto See
+	Pain.Explosion:
+		TNT1 A 0 A_Pain
+		GNR4 ABCDEFHI 6
+		Goto See
+	Pain1:
+		GNR4 JKLMNOPQ 5
+		Goto See
+	Pain2:
+		GNR4 RSTUV 6
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		GNR5 ABCDEFGHI 5
+		GNR5 J -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+Actor GunnerGrenade : Q2Grenade 
+{ 
+Speed 16 
+Scale 0.8 
+DontHurtShooter 
+Damage 0 
+ExplosionDamage 25 
+}
+
+Actor Q2GunnerRandomSpawner : RandomSpawner
+{ DropItem "Q2Bullets" 192
+  DropItem "Q2GrenadeAmmoItem" 128 }
+
+Actor Flyer : Q2SoldierBase
+{
+	SeeSound "Flyer/Sight"
+	ActiveSound "Flyer/Active"
+	PainSound "Flyer/Pain"
+	DeathSound "Flyer/Death"
+	AttackSound ""
+	Obituary "%o was shoot down by a \c[d5]Flyer."
+	MeleeDamage 3
+	Speed 8
+	+NOGRAVITY +FLOAT +FLOATBOB +DONTFALL +DONTGIB
+	+NOINFIGHTSPECIES
+	Health 60
+	PainChance 30
+	DropItem Q2Cell 100
+	Species "Flyer"
+    Tag "\c[d5]Flyer"
+	States
+	{
+	Spawn:
+		FLR1 A 0 NoDelay A_PlaySound("Flyer/Fly",CHAN_BODY,0.5,1)
+		FLR1 ABCDEFGHIJKLMNOPQRSTUV 3 A_Look
+		Goto Spawn+1
+	See:
+		FLR1 A 0 A_ChangeFlag(NOPAIN,0)
+		FLR1 ABCDEFGHIJKLMNOPQRSTUV 3 A_Chase
+		Loop
+	Melee:
+		FLR3 A 0 A_PlayWeaponSound("Flyer/Melee1")
+		FLR1 A 5
+		FLR3 ABCDEFGHI 4 A_FaceTarget
+		FLR3 J 0 A_PlayWeaponSound("Flyer/Melee2")
+		FLR3 J 3 A_MeleeAttack
+		FLR3 KLM 4 A_FaceTarget
+		FLR3 N 0 A_PlayWeaponSound("Flyer/Melee2")
+		FLR3 N 3 A_MeleeAttack
+		FLR3 OPQRSTU 4 A_FaceTarget
+		Goto See
+	Missile:
+		FLR1 A 8 A_FaceTarget
+		FLR2 ABCD 3 A_FaceTarget
+		FLR2 E 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 E 4 A_CustomMissile(FlyerProjectile,15,-15)
+		FLR2 F 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 F 4 A_CustomMissile(FlyerProjectile,15,17)
+		FLR2 G 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 G 4 A_CustomMissile(FlyerProjectile,15,-15)
+		FLR2 H 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 H 4 A_CustomMissile(FlyerProjectile,15,17)
+		FLR2 I 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 I 4 A_CustomMissile(FlyerProjectile,15,-15)
+		FLR2 J 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 J 4 A_CustomMissile(FlyerProjectile,15,17)
+		FLR2 K 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 K 4 A_CustomMissile(FlyerProjectile,15,-15)
+		FLR2 L 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Flyer/Attack")
+		FLR2 L 4 A_CustomMissile(FlyerProjectile,15,17)
+		FLR2 MNOPQ 3
+		Goto See
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+		FLR4 ABCDEFGH 5
+		Goto See
+	Pain2:
+		FLR4 IJKL 5
+		Goto See
+	Pain3:
+		FLR4 MNOP 5
+		Goto See
+	Death:
+		FLR1 A 10 A_Scream
+		TNT1 A 0 A_Fall
+		TNT1 A 0 A_PlaySound("Weapons/RocketExplosion")
+		TNT1 A 5 A_SpawnItem(Q2Explosion)
+		Stop
+	XDeath:
+		Stop
+	}
+}
+Actor FlyerProjectile : HyperBlasterProjectile 
+{ 
+Damage (Random(2,4)) 
+}
+
+Actor Parasite : Q2SoldierBase
+{
+	SeeSound "Parasite/Sight"
+	ActiveSound "Parasite/Active"
+	PainSound "Parasite/Pain"
+	DeathSound "Parasite/Death"
+	Health 200
+	Speed 18
+	MeleeRange 192
+	PainChance 40
+	Mass 200
+	Obituary "%o was exsanguinated by a \c[q3]Parasite."
+	+NOINFIGHTSPECIES
+	Species "Parasite"
+	MissileHeight 30
+	MissileType ParasiteProjectile
+	Tag "\c[q3]Parasite"
+	States
+	{
+	Spawn:
+		PRT0 ABCDEFGHGFEDCB 6 A_Look
+		PRT0 A 0 A_Jump(96,1)
+		Loop
+		PRT0 I 16 A_Look
+		PRT0 JKLMNOPQRSTUVWXYZ 6 A_Look
+		Loop
+	See:
+		PRT1 A 0 A_ChangeFlag(NOPAIN,0)
+		PRT1 ABCDEFGHIJKL 3 A_Chase
+		PRT1 MNO 3 A_Chase("Melee",0,CHF_DONTMOVE)
+		Loop
+	Melee:
+		PRT2 AB 4 A_FaceTarget
+		PRT2 A 0 A_PlaySound("Parasite/Attack1")
+		PRT2 C 4 A_MissileAttack
+		PRT2 D 0 A_CustomMissile(ParasiteProjectileB,30)
+		PRT2 DE 4 A_MissileAttack
+		PRT2 F 0 A_PlaySound("Parasite/Attack3",0)
+		PRT2 FGHIJKLM 4 A_MissileAttack
+		PRT2 F 0 A_PlaySound("Parasite/Attack4")
+		PRT2 NOPQR 3 A_FaceTarget
+		Goto See
+	Missile:
+		Stop
+	Pain:
+		"----" A 0 A_Pain
+		"----" A 3 A_ChangeFlag(NOPAIN,1)
+		PRT3 ABCDEFGHIJK 3
+		Goto See
+	Death:
+		"----" A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"----" A 3 A_ScreamAndUnblock
+		PRT3 LMNOPQ 4
+		PRT3 R -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+ACTOR ParasiteProjectile : FastProjectile
+{
+	Speed 20
+	Damage 1
+	+STRIFEDAMAGE +NOTIMEFREEZE +BLOODSPLATTER
+	Height 5
+	Radius 3
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_ChangeFlag(PAINLESS,Random(0,128))
+	Moving:
+		TNT1 A 0 A_JumpIfCloser(5000,1)
+		Stop
+		TNT1 A 0 A_SpawnItemEx(ParasiteProjectileSegment,0,0,0,(MomX*0.01), (MomY*0.01), (MomZ*0.01), Angle, 128 | SXF_ABSOLUTEPOSITION | SXF_ABSOLUTEMOMENTUM | SXF_SETMASTER | SXF_ABSOLUTEANGLE)
+		
+		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Stop
+		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Stop
+		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Stop
+		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,1) Stop
+		TNT1 A 0 A_Warp(AAPTR_DEFAULT,MomX/5,MomY/5,MomZ/5,0,WARPF_ABSOLUTEOFFSET,"Moving")
+		Stop
+	}
+}
+Actor ParasiteProjectileB : FastProjectile
+{
+	Speed 256
+	Height 5
+	Radius 3
+	States
+	{
+	Spawn:
+		TNT1 A 2
+		Stop
+	XDeath:
+		TNT1 A 1 A_PlaySound("Parasite/Attack2")
+		Stop
+	}
+}
+Actor ParasiteProjectileSegment : EffectBase
+{
+	+NOTIMEFREEZE
+	RenderStyle Normal
+	States
+	{
+	Spawn:
+		NULL ABCD 0 A_Jump(64,"Fade")
+		Loop
+	Fade:
+		"####" "#" 4
+		Stop
+	}
+}
+
+Actor Brain : Q2SoldierBase
+{
+	SeeSound "Q2Brain/Sight"
+	ActiveSound "Q2Brain/Active"
+	PainSound "Q2Brain/Pain"
+	DeathSound "Q2Brain/Death"
+	MeleeSound "Infantry/Melee"
+	Health 300
+	Speed 5
+	MeleeDamage 4
+	MeleeRange 80
+	PainChance 60
+	Mass 200
+	Obituary "%o was clawed by a \c[q3]Brain."
+	+NOINFIGHTSPECIES
+	Species "Brain"
+    Tag "\c[q3]Brain"
+	States
+	{
+	Spawn:
+		BRN0 A 0 NoDelay A_SpawnItem(BrainShieldSpawner)
+		BRN0 ABCDEFGHIJKLMNOPONMLKJIHGFEDCB 6 A_Look
+		Goto Spawn+1
+	See:
+		BRN0 Q 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_SpawnItem(BrainShieldSpawner)
+		BRN0 QRSTUVWXY 3 A_Chase
+		BRN0 "Z^[]" 3 A_Chase("Melee","",CHF_DONTMOVE)
+		Loop
+	Melee:
+		TNT1 A 0 A_Jump(80,"Melee2")
+		BRN1 ABCD 3 A_FaceTarget
+		BRN1 E 0 A_PlaySound("Q2Brain/Attack",CHAN_BODY)
+		BRN1 EF 2 A_FaceTarget
+		BRN1 G 2 A_MeleeAttack
+		BRN1 HIJKL 3 A_FaceTarget
+		BRN1 M 3 A_MeleeAttack
+		BRN1 NOPQR 3 A_FaceTarget
+		Goto See
+	Melee2:
+		BRN2 ABC 4 A_FaceTarget
+		BRN2 D 0 A_PlaySound("Q2Brain/OpenChest",0,0.5)
+		BRN2 DE 4 A_FaceTarget
+		BRN2 F 0 A_PlaySound("Q2Brain/Attack2",CHAN_BODY)
+		TNT1 AA 0 A_MeleeAttack
+		BRN2 FGHIJKLMNOPQ 3 A_FaceTarget
+		Goto See
+	Missile:
+		Stop
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+		BRN3 ABCDEFGHIJKLMNOPQRSTUVW 3
+		Goto See
+	Pain2:
+		BRN4 ABCDEFGH 3
+		Goto See
+	Pain3:
+		BRN4 IJKLMN 4
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_TakeInventory(Clip)//Shields down
+		TNT1 A 0 A_GiveInventory(CheckShield)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_Jump(256,"Death1","Death2")
+	Death1:
+		BRN0 A 10
+		BRN5 ABCD 7
+		BRN5 EFGHIJKLMNOPQ 5
+		BRN5 R -1
+		Stop
+	Death2:
+		BRN0 A 10
+		BRN5 STUV 8
+		BRN5 W -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+Actor BrainShieldSpawner
+{
+	+NOINTERACTION
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_JumpIfInTargetInventory(Clip,1,"Null")
+		TNT1 A 0 A_GiveToTarget(Clip,1)
+		TNT1 A 0 A_Warp(AAPTR_TARGET,0,0,0,0,WARPF_NOCHECKPOSITION,1)
+		Stop
+		TNT1 A 6 A_SpawnItemEx(BrainShield,32,0,0)
+		TNT1 A 0 A_JumpIfInTargetInventory(Clip,1,1)
+		TNT1 A 0 A_JumpIfInTargetInventory(CheckShield,1,"Death.Removed")
+		Goto Spawn+2
+		Death.Removed:
+		TNT1 A 0 
+		Stop
+	}
+}
+Actor BrainShield
+{
+	Translation "0:255=115:115"
+	+BRIGHT +NOBLOODDECALS +SHOOTABLE -SOLID 
+	+NOGRAVITY +GHOST
+	BloodType GreenPuff
+	Health 50
+	Scale 1.5
+	PainChance 256
+	Radius 25
+	Height 55
+	RenderStyle Add
+	Alpha 0.66
+	Mass 0x7fffffff
+	States
+	{
+	Spawn:
+		TNT1 A 6
+		Stop
+	Death:
+	Pain:
+		BAR1 A 5 A_ChangeFlag(NOPAIN,1)
+		Stop
+	}
+}
+
+Actor CheckShield : Inventory { }
+
+Actor Q2Medic : Q2SoldierBase
+{
+	SeeSound "Medic/Sight"
+	ActiveSound "Medic/Active"
+	PainSound "Medic/Pain"
+	DeathSound "Medic/Death"
+	
+	Speed 16
+	Health 300
+	PainChance 60
+	GibHealth 100
+	Mass 600
+	Obituary "%o was blasted by a \c[l6]Medic."
+	+NOINFIGHTSPECIES
+	DropItem Q2Cell 128
+	Species "Medic"
+	Tag "\c[l6]Medic"
+	States
+	{
+	Spawn:
+		MED5 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 5 A_Look
+		MED6 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 5 A_Look
+		MED7 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 5 A_Look
+		MED8 ABC 5 A_Look
+		MED5 A 0 A_PlaySound("Medic/Idle",CHAN_VOICE)
+		Loop
+	See:
+		MED0 A 0 A_ChangeFlag(NOPAIN,0)
+		MED0 ABCDEF 3 A_VileChase
+		Loop
+	Missile:
+		MED1 ABCDEFGHI 3 A_FaceTarget
+		MED1 J 0 A_PlayWeaponSound("Medic/Attack")
+		MED1 J 3 A_CustomMissile(BlasterProjectile,38,12)
+		MED1 KL 3 A_FaceTarget
+		MED1 M 0 A_PlayWeaponSound("Medic/Attack")
+		MED1 M 3 A_CustomMissile(BlasterProjectile,38,12)
+		MED1 NOPQRS 3 A_FaceTarget
+		MED1 T 0 A_CustomMissile(HoverProjectile,38,18) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 T 3 A_FaceTarget
+		MED1 U 0 A_CustomMissile(HoverProjectile,38,14) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 U 4 A_FaceTarget
+		MED1 V 0 A_CustomMissile(HoverProjectile,38,8) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 V 3 A_FaceTarget
+		MED1 W 0 A_CustomMissile(HoverProjectile,38,4) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 W 4 A_FaceTarget
+		MED1 X 0 A_CustomMissile(HoverProjectile,38,0) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 X 3 A_FaceTarget
+		MED1 Y 0 A_CustomMissile(HoverProjectile,38,4) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 Y 4 A_FaceTarget
+		MED1 Z 0 A_CustomMissile(HoverProjectile,38,8) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 Z 3 A_FaceTarget
+		MED1 "\" 0 A_CustomMissile(HoverProjectile,38,10) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 "\" 4 A_FaceTarget
+		MED1 "[" 0 A_CustomMissile(HoverProjectile,38,13) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 "[" 3 A_FaceTarget
+		MED1 "]" 0 A_CustomMissile(HoverProjectile,38,15) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED1 "]" 4 A_FaceTarget
+		MED2 A 0 A_CustomMissile(HoverProjectile,38,14) TNT1 A 0 A_PlayWeaponSound("Medic/Attack") MED2 A 3 A_FaceTarget
+		MED2 BCDEFGH 2 A_FaceTarget
+		Goto See
+	Heal:
+		"----" A 3 A_PlayWeaponSound("Medic/Heal")
+		MED2 IJKLMNOPQRSTUV 2
+		MED2 "WXYZ\[]" 3
+		MED0 YZ 3
+		Goto See
+	Pain:
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 0 A_Pain
+		"----" A 0 A_Jump(256,"Pain1","Pain2")
+		Goto See
+	Pain1:
+		"----" A 3
+		MED3 ABCDEFGH 3
+		Goto See
+	Pain2:
+		"----" A 3
+		MED3 IJKLMNOPQRSTUVW 3
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		MED4 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[" 3
+		MED4 "]" -1
+		Stop
+	Raise:
+		Stop
+	}
+}
+
+Actor Hover : Q2SoldierBase
+{
+	SeeSound "Hover/Sight"
+	ActiveSound "Hover/Active"
+	PainSound "Hover/Pain"
+	DeathSound "Hover/Death"
+	Speed 8
+	+NOGRAVITY +FLOAT +FLOATBOB
+	+NOINFIGHTSPECIES
+	Health 240
+	PainChance 60
+	GibHealth 100
+	Mass 600
+	Obituary "%o was blasted by an \c[l6]Icarus."
+	DropItem "Q2Cell", 120
+	Species "Icarus"
+	Tag "\c[l6]Icarus"
+	States
+	{
+	Spawn:
+		HVR0 A 0 NoDelay A_PlaySound("Hover/Fly",CHAN_BODY,0.5,1)
+		HVR0 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[^]" 6 A_Look
+		Goto Spawn+1
+	See:
+		HVR1 A 0 A_ChangeFlag(NOPAIN,0)
+		HVR1 "ABCDEFGHIJKLMNOPQRSTUVWXYZ[^]" 3 A_Chase
+		Loop
+	Missile:
+		"----" A 5 A_FaceTarget
+		HVR3 LMN 3 A_FaceTarget
+		HVR3 O 0 A_PlayWeaponSound("Hover/Attack")
+		HVR3 O 3 A_CustomMissile(HoverProjectile,34,9)
+		HVR3 P 0 A_PlayWeaponSound("Hover/Attack")
+		HVR3 P 3 A_CustomMissile(HoverProjectile,34,-9)
+		HVR3 QRS 3 A_FaceTarget
+		HVR3 N 0 A_Jump(64,"See")
+		HVR3 N 0 A_CPosRefire
+		Goto Missile+4
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2")
+	Pain1:
+		HVR2 ABCDEFGHIJKL 3
+		Goto See
+	Pain2:
+		HVR2 MNOPQRSTU 3
+		Goto See
+	Death:
+		TNT1 A 0 A_ChangeFlag(FLOATBOB,0)
+		TNT1 A 0 A_StopSound(CHAN_BODY)
+		HVR1 A 0 A_ScreamAndUnblock
+		HVR3 ABCDEFGHIJ 4
+		HVR3 K 1 A_JumpIf(MomZ==0,1)
+		Wait
+//		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+//		HVR3 K -1 A_Jump(160,1) No.
+		HVR3 K 20
+		TNT1 A 0 A_PlaySound("Weapons/RocketExplosion")
+		TNT1 A 0 A_SpawnItem(Q2Explosion)
+		Goto Super::XDeath+1
+	XDeath:
+		TNT1 A 0 A_PlaySound("Weapons/RocketExplosion")
+		TNT1 A 0 A_SpawnItem(Q2Explosion,0,32)
+		Goto Super::XDeath
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+Actor HoverProjectile : BlasterProjectile { MissileType "" Damage (Random(4,6)) }
+
+Actor Technician : Q2SoldierBase
+{
+	SeeSound "Technician/Sight"
+	ActiveSound "Technician/Active"
+	PainSound "Technician/Pain"
+	DeathSound "Technician/Death"
+	Speed 8
+	+NOINFIGHTSPECIES
+	+NOGRAVITY +FLOAT +FLOATBOB
+	Health 200
+	PainChance 60
+	GibHealth 100
+	MeleeDamage 5
+	Mass 600
+	HitObituary "%o was electrified by a \c[q2]Technician."
+	Obituary "%o couldn't be repaired by a \c[q2]Technician."
+	DropItem "Q2Cell", 100
+	Species "Technician"
+	Tag "\c[q2]Technician"
+	States
+	{
+	Spawn:
+		TEK1 A 0 NoDelay A_PlaySound("Hover/Fly",CHAN_BODY,0.5,1)
+		TEK1 A 6 A_LookEx(0,0,0,0,0,1)
+		Loop
+	See:
+		TEK1 A 0 A_ChangeFlag(NOPAIN,0)
+		TEK1 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 3 A_Chase
+		TEK2 ABCDEFGHIJKLMNOPQRSTUVW 3 A_Chase
+		Loop
+	Melee:
+	    TNT1 A 0 A_Jump(128,"Melee2")
+		TEK4 ABCDEFGHIJKL 3 A_FaceTarget
+		TNT1 A 0 A_PlayWeaponSound("Technician/Melee2")
+		TNT1 A 0 A_MeleeAttack
+		TEK4 MNOPQRSTUVWXY 3
+		Goto See
+	Melee2:
+	    TNT1 A 0 A_Jump(128,"Melee2")
+		TEK5 ABCDEFGH 3 A_FaceTarget
+		TNT1 A 0 A_PlayWeaponSound("Technician/Melee1")
+		TNT1 A 0 A_MeleeAttack
+		TEK5 IJKLMNOPQRSTUVWXYZ 3
+		TEK6 ABCDEFGH 3
+		Goto See
+	Missile:
+		TEK3 ABC 4 A_FaceTarget
+		TEK3 D 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 D 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 E 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 E 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 F 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 F 4 A_CustomMissile(TechnicianProjectile,25,-0)
+		TEK3 G 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 G 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 H 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 H 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 I 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 I 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 J 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 J 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 K 0 A_FaceTarget TNT1 A 0 A_PlayWeaponSound("Technician/Blaster")
+		TEK3 K 4 A_CustomMissile(TechnicianProjectile,25,0)
+		TEK3 LMN 4
+		Goto See
+	Pain:
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 0 A_Pain
+		"----" A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+		"----" A 3
+		TEK6 HIJKLMN 3
+		Goto See
+	Pain2:
+		"----" A 3
+		TEK6 OPQRSTUV 3
+		Goto See
+	Pain3:
+		"----" A 3
+		TEK7 ABCDEFGHIJKL 3
+		Goto See
+	Death:
+		"----" A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"----" A 3 A_ScreamAndUnblock
+		TEK7 M 0 A_ChangeFlag(FLOATBOB,0)
+		TEK7 MNOPQRS 4
+		Goto Death+2
+	Crash:
+		TEK7 TUVWX 4
+		TEK7 Y 35
+	XDeath:
+		TNT1 A 0 A_PlaySound("Weapons/RocketExplosion")
+		TNT1 A 0 A_SpawnItem(Q2Explosion,0,32)
+		Goto Super::XDeath
+	}
+}
+
+Actor TechnicianProjectile : HyperBlasterProjectile 
+{ 
+Damage 1
+}
+
+Actor Mutant // Special thanks to DBThanatos for the main base of the Mutant from QC:DE
+{
+	Health 300
+	Radius 20
+	Height 56
+	Mass 400 
+	Speed 24
+	MeleeDamage 5
+	MeleeRange 75
+	Damage 5
+	PainChance 109
+	Monster 
+	Tag "\c[u6]Mutant"
+	SeeSound "Mutant/Sight"
+	PainSound "Mutant/Pain"
+	DeathSound "Mutant/Death"
+	ActiveSound "Mutant/Active"
+	AttackSound ""
+	+NOINFIGHTSPECIES
+	+FLOORCLIP
+	-MISSILEMORE
+	Obituary "%o was disemboweled by a \c[u6]Mutant."
+	States
+	{
+	Spawn:
+		MTS1 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_Look
+		MTS2 ABCDEFGHIJKLMNOPQRSTUVWXYZ 1 A_Look
+		MTS3 ABCDEFGHIJKL 3 A_Look
+		Loop 
+	See:
+	    TNT1 A 0 A_ChangeFlag("NOPAIN",0)
+	    MTW1 ABCDEF 3
+	SeeLoop:
+	    MTR0 CDEFGH 3 A_VileChase
+		TNT1 A 0 A_PlaySound ("Mutant/Step")
+		Loop
+	Something: // Unused
+	    MTW1 RSTUVW 0
+		Stop
+	SeeNoMissile: 
+		MTW1 ABCDE 3
+	SeeNoMissileHold:
+	    TNT1 A 0 A_PlaySound ("Mutant/Step")
+		MTW1 FGHIJK 3 A_Chase
+		TNT1 A 0 A_PlaySound ("Mutant/Step")
+		MTW1 LMNOPQ 3 A_Chase
+		Goto SeeNoMissileHold
+	Melee:
+		MTA2 ABCD 3 A_FaceTarget
+		TNT1 A 0 A_PlaySound("Mutant/Attack")
+		MTA2 E 4 A_MeleeAttack
+		MTA2 FG 3 A_FaceTarget
+		TNT1 Z 0 A_PlaySound("Mutant/Attack")
+		MTA2 H 3 A_MeleeAttack
+		MTA2 IJ 3 A_FaceTarget
+		Goto See
+	Missile:
+		TNT1 A 0 A_GiveInventory("JumpCheck",1)
+		MTA1 A 0 A_PlaySound("Mutant/Sight")
+		MTA1 BC 3 A_Facetarget
+		TNT1 A 0 A_SkullAttack
+		MTA1 D 1 ThrustThingZ(0,25,0,0)
+		MTA1 D 1 A_CheckFloor("Landed") 
+		Wait
+	Landed:
+		MTA1 E 3 
+		TNT1 A 0 A_Stop
+		TNT1 A 0 A_PlaySound("Mutant/Land")
+		MTA1 E 3 
+		Goto SeeNoMissileHold
+	Pain:
+	    TNT1 A 0 A_ChangeFlag("NOPAIN",1)
+	    TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+	    TNT1 A 0 A_Pain
+		MTP1 ABCDE 4
+		Goto See
+	Pain2:
+	    TNT1 A 0 A_Pain
+		MTP2 ABCDEF 3
+		Goto See
+	Pain3:
+	    TNT1 A 0 A_Pain
+		MTP3 ABCDEFGHIJK 2
+		Goto See
+	Death:
+	    TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+	    TNT1 A 0 A_ScreamAndUnblock
+	    TNT1 A 0 A_Jump(256,"Death1","Death2")
+	Death1:
+		MTD1 ABCDEFGH 5
+	    MTD1 I 5
+		MTD1 I -1
+		Stop
+	Death2:
+	    MTD2 ABCDEFGHIJ 5
+		MTD2 J -1
+		Stop
+	XDeathChecksDone:
+		TNT1 A 0 A_Fall
+		TNT1 A 5 A_SpawnItem(Q2GibSpawner)
+		TNT1 A 0
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto SeeNoMissileHold
+	Crush:
+		TNT1 AAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(40),0,5,Random(0,1),0,2,Random(1,360))
+		TNT1 A 5 A_XScream
+		Stop
+	}
+}
+
+Actor JumpCheck : Inventory { Inventory.MaxAmount 1 Inventory.Amount 1 }
+
+Actor Gladiator : Q2SoldierBase
+{
+	Health 400
+	PainChance 30
+	SeeSound "Gladiator/Sight"
+	ActiveSound "Gladiator/Active"
+	PainSound "Gladiator/Pain"
+	DeathSound "Gladiator/Death"
+	AttackSound ""
+	MeleeRange 75
+	Mass 500
+	GibHealth 175
+	+NOINFIGHTSPECIES
+	+MISSILEMORE +BOSSDEATH
+	HitObituary "%o was hit by a \c[l5]Gladiator."
+	Obituary "%o was railed by a \c[l5]Gladiator."
+	DropItem "Q2GladiatorRandomSpawner", 60
+	Species "Gladiator"
+	Tag "\c[l5]Gladiator"
+	States
+	{
+	Spawn:
+		GLD0 ABCDEFG 6 A_Look
+		Loop
+	See:
+		GLD0 H 0 A_ChangeFlag(NOPAIN,0)
+		GLD0 HIJKLM 4 A_Chase
+		Loop
+	Melee:
+		TNT1 A 0 A_PlaySound("Gladiator/Melee1",CHAN_BODY)
+		GLD1 ABCDEF 3 A_FaceTarget
+		GLD1 G 3 A_CustomMeleeAttack(Random(10,25),"Infantry/Melee","Gladiator/Melee2")
+		TNT1 A 0 A_PlaySound("Gladiator/Melee1",CHAN_BODY)
+		GLD1 HIJKLM 3 A_FaceTarget
+		GLD1 N 3 A_CustomMeleeAttack(Random(10,25),"Infantry/Melee","Gladiator/Melee2")
+		GLD1 OPQ 3 A_FaceTarget
+		Goto See
+	Missile:
+		TNT1 A 0 A_FaceTarget
+		TNT1 A 0 A_PlayWeaponSound("Gladiator/Railgun")
+		GLD1 R 8
+		GLD1 S 5 A_FaceTarget
+		GLD1 T 3
+		GLD1 U 4 A_CustomRailgun(50,19,"2F 67 7F","White",RGF_FULLBRIGHT,1,0,"Q2RailgunPuff",0,0,8129,35,1,1,None,10)
+		GLD1 VWXYZ 4
+		Goto See
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		GLD2 ABCDEF 4
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_PlaySound("Gladiator/Deathb",0)
+		GLD0 H 3
+		GLD2 GHIJKLMNOPQRSTUVWXY 4
+		GLD2 Z -1 A_BossDeath
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+
+Actor Q2GladiatorRandomSpawner : RandomSpawner
+{ DropItem "Q2SlugPickupSmall", 210
+  DropItem "Q2QuadDamage", 2 }
+
+Actor IronMaiden : Q2SoldierBase
+{
+	SeeSound "IronMaiden/Sight"
+	ActiveSound "IronMaiden/Active"
+	PainSound "IronMaiden/Pain"
+	DeathSound "IronMaiden/Death"
+	MeleeSound "IronMaiden/Attack4"
+	+NOINFIGHTSPECIES
+	Health 175
+	Speed 8
+	MeleeDamage 15
+	PainChance 60
+	PainChance "Railgun", 250
+	Mass 200
+	Obituary "%o almost dodged an \c[g5]Iron \c[q3]Maiden's \c[g5]rocket"
+	HitObituary "%o was bitch-slapped by an \c[g5]Iron \c[q3]Maiden"
+	DropItem "Q2Rockets" 128
+	Species "IronMaiden"
+	Tag "\c[g5]Iron \c[q3]Maiden"
+	States
+	{
+	Spawn:
+		BTC0 "ABCDEFGHIJKLMNOPQRSTUVWXYZ^[]" 6 A_Look
+		BTC0 A 0 A_Jump(64,1)
+		Loop
+		BTC1 ABCDEFGHIJKLMNO 6
+		BTC1 P 0 A_PlaySound("IronMaiden/Idle")
+		BTC1 "PQRSTUVWXYZ^[]" 6 A_Look
+		Goto Spawn+1
+	See:
+		BTC2 A 0 A_ChangeFlag(NOPAIN,0)
+		BTC2 ABCDEFGHIJ 3 A_Chase
+		Loop
+	Melee:
+		TNT1 A 0 A_PlaySound("IronMaiden/Attack3",CHAN_VOICE)
+		BTC2 KLMN 3 A_FaceTarget
+		BTC2 O 0 A_MeleeAttack
+		BTC2 OPQRSTUVWXYZ Random(2,3) A_FaceTarget
+		Goto See
+	Missile:
+		TNT1 A 0 A_PlaySound("IronMaiden/Attack1",CHAN_VOICE)
+		BTC3 ABCDEFGHIJKLM 3 A_FaceTarget
+		BTC3 N 0 A_CustomMissile(IronMaidenRocket,42,-8)
+		TNT1 A 0 A_Recoil(5)
+		TNT1 A 0 A_PlayWeaponSound("IronMaiden/Attack2")
+		BTC3 NOPQRST 3
+		BTC3 U 3 A_PlaySound("IronMaiden/Attack5",0)
+		BTC3 VWXY 3
+		Goto See
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2")
+	Pain1:
+		BTC4 ABCDE 3
+		Goto See
+	Pain2:
+		BTC4 FGHIJ 3
+		Goto See
+	Pain.Railgun:
+		TNT1 A 0 A_Pain
+		BTC4 K 3
+		BTC4 "KLMNOPQRSTUVWXYZ^[]" 4
+		BTC3 "Z^" 3
+		Goto See
+	Pain.Explosion:
+		TNT1 A 0 A_Pain
+		BTC4 K 3
+		BTC4 "KLMNOPQRSTUVWXYZ^[]" 4
+		BTC3 "Z^" 3
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_Jump(256,"Death1","Death2")
+	Death1:
+		BTC2 A 5
+		BTC5 ABCDEFGHIJK 4
+		BTC5 L -1
+		Stop
+	Death2:
+		BTC6 ABCDEFGHIJKLMNOPQRSTUV 4
+		BTC6 W -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+Actor IronMaidenRocket : Q2Rocket 
+{ 
+    Speed 15 
+    Damage 10 
+    ExplosionDamage 64 
+    DontHurtShooter 
+}
+
+Actor Tank : Q2SoldierBase
+{
+	SeeSound "Tank/Sight"
+	ActiveSound "Tank/Active"
+	PainSound "Tank/Pain"
+	DeathSound "Tank/Death"
+	AttackSound "Tank/Attack2"
+	Health 750
+	Speed 5
+	PainChance 5
+	Height 64
+	Radius 24
+	Mass 1000
+	+NOINFIGHTSPECIES
+	+BOSSDEATH
+	Obituary "%o was pumped full of lead by a \c[u6]Tank"
+	DropItem "Q2TankRandomSpawner", 100
+	GibHealth 200
+	Species "Tank"
+	Tag "\c[u6]Tank"
+	States
+	{
+	Spawn:
+		TNK0 ABCDEFGHIJIHGFEDCB 6 A_Look
+		Goto Spawn+1
+	See:
+		TNK0 K 0 A_ChangeFlag(NOPAIN,0)
+		TNK0 KLMNOP 3 A_Chase
+		TNK0 P 0 A_PlaySound("Tank/Step",CHAN_BODY)
+		TNK0 PQR 3 A_Chase
+		TNK0 STUVW 3 A_Chase
+		TNK0 X 0 A_PlaySound("Tank/Step",CHAN_BODY)
+		TNK0 XYZ 3 A_Chase
+		Loop
+	Missile:
+		"----" A 0 A_Jump(128,"Missile2","Missile3")
+		"----" A 8 A_FaceTarget
+		TNK1 ABCDEFGHI 3 A_FaceTarget(20)
+		TNK1 J 0 A_PlayWeaponSound("Tank/Attack3")
+		TNT1 A 0 A_CustomMissile(BlasterProjectile,40*ScaleX,-18*ScaleX,-3)
+		TNK1 JKL 3 A_FaceTarget
+		TNK1 M 0 A_PlayWeaponSound("Tank/Attack3")
+		TNT1 A 0 A_CustomMissile(BlasterProjectile,38*ScaleX,-20*ScaleX,0)
+		TNK1 MNO 3 A_FaceTarget
+		TNK1 P 0 A_PlayWeaponSound("Tank/Attack3")
+		TNT1 A 0 A_CustomMissile(BlasterProjectile,36*ScaleX,-23*ScaleX,3)
+		TNK1 PQRSTU 3 A_FaceTarget(20)
+		TNK1 V 10
+		Goto See
+	Missile2:
+		"----" A 8 A_FaceTarget
+		TNK2 A 0 A_PlayWeaponSound("Tank/Attack4")
+		TNK2 ABCDEFGHIJKLMNOPQRSTUVW 3 A_FaceTarget(20)
+		TNK2 X 0 A_PlayWeaponSound("Tank/Attack1")
+		TNT1 A 0 A_CustomMissile(IronMaidenRocket,60*ScaleX,26*ScaleX,0)
+		TNK2 XYZ 3 A_FaceTarget
+		TNK2 "^" 0 A_PlayWeaponSound("Tank/Attack1")
+		TNT1 A 0 A_CustomMissile(IronMaidenRocket,60*ScaleX,22*ScaleX,0)
+		TNK2 "^[]" 3 A_FaceTarget
+		TNK3 A 0 A_PlayWeaponSound("Tank/Attack1")
+		TNT1 A 0 A_CustomMissile(IronMaidenRocket,60*ScaleX,18*ScaleX,0)
+		TNK3 ABC 3 A_FaceTarget
+		TNK2 X 0 A_PlaySound("Tank/Attack4",0)
+		TNK3 DEFGHIJKLMNOPQRSTUVW 4
+		TNK3 X 10
+		Goto See
+	Missile3:
+		"----" A 8 A_FaceTarget
+		TNK4 ABCDE 3 A_FaceTarget(15)
+		TNK4 F 0 A_SpawnItemEx(EnemyFlashSpawner,23*ScaleX,0,36*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 F 3 A_CustomBulletAttack(20+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 G 0 A_SpawnItemEx(EnemyFlashSpawner,22*ScaleX,6*ScaleX,33*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 G 4 A_CustomBulletAttack(10+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 H 0 A_SpawnItemEx(EnemyFlashSpawner,20*ScaleX,14*ScaleX,30*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 H 3 A_CustomBulletAttack(Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 I 0 A_SpawnItemEx(EnemyFlashSpawner,20*ScaleX,20*ScaleX,30*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 I 4 A_CustomBulletAttack(-5+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 J 0 A_SpawnItemEx(EnemyFlashSpawner,17*ScaleX,25*ScaleX,32*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 J 3 A_CustomBulletAttack(-10+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 K 0 A_SpawnItemEx(EnemyFlashSpawner,14*ScaleX,30*ScaleX,32*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 K 4 A_CustomBulletAttack(-20+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 L 0 A_SpawnItemEx(EnemyFlashSpawner,8*ScaleX,35*ScaleX,32*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 L 3 A_CustomBulletAttack(-30+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 M 0 A_SpawnItemEx(EnemyFlashSpawner,4*ScaleX,38*ScaleX,33*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 M 4 A_CustomBulletAttack(-50+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 N 0 A_SpawnItemEx(EnemyFlashSpawner,-1*ScaleX,41*ScaleX,35*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 N 3 A_CustomBulletAttack(-60+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 O 0 A_SpawnItemEx(EnemyFlashSpawner,-7*ScaleX,42*ScaleX,35*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 O 4 A_CustomBulletAttack(-80+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 P 0 A_SpawnItemEx(EnemyFlashSpawner,3*ScaleX,42*ScaleX,36*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 P 3 A_CustomBulletAttack(-70+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 Q 0 A_SpawnItemEx(EnemyFlashSpawner,12*ScaleX,38*ScaleX,36*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 Q 4 A_CustomBulletAttack(-60+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 R 0 A_SpawnItemEx(EnemyFlashSpawner,19*ScaleX,32*ScaleX,36*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 R 3 A_CustomBulletAttack(-50+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 S 0 A_SpawnItemEx(EnemyFlashSpawner,24*ScaleX,25*ScaleX,36*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 S 4 A_CustomBulletAttack(-30+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 T 0 A_SpawnItemEx(EnemyFlashSpawner,28*ScaleX,18*ScaleX,37*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 T 3 A_CustomBulletAttack(-20+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 U 0 A_SpawnItemEx(EnemyFlashSpawner,28*ScaleX,10*ScaleX,37*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 U 4 A_CustomBulletAttack(-10+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 V 0 A_SpawnItemEx(EnemyFlashSpawner,28*ScaleX,3*ScaleX,37*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 V 3 A_CustomBulletAttack(0+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 W 0 A_SpawnItemEx(EnemyFlashSpawner,26*ScaleX,-3*ScaleX,38*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 W 4 A_CustomBulletAttack(10+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 X 0 A_SpawnItemEx(EnemyFlashSpawner,23*ScaleX,-7*ScaleX,39*ScaleX) TNT1 A 0 A_SpawnItem(WeaponFlash) TNK4 X 3 A_CustomBulletAttack(20+Random2(5),Random2(5),1,6,"BulletPuff",2048,CBAF_EXPLICITANGLE|CBAF_AIMFACING)
+		TNK4 "YZ\[" 3
+		TNK4 "]" 10
+		Goto See
+	Pain.Railgun:
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain.Explosion:
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")	
+	Pain1:
+		TNK5 ABCD 6
+		Goto See
+	Pain2:
+		TNK5 EFGHI 6
+		Goto See
+	Pain3:
+		TNK5 JKLMNOPQRSTUVWXY 4
+		Goto See
+	Death:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_ScreamAndUnblock
+		TNK6 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\" 4
+		TNK6 "[" 3 A_PlaySound("Tank/Death2",CHAN_BODY)
+		TNK6 "]" 3
+		TNK1 X -1 A_BossDeath
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+
+Actor Q2TankRandomSpawner : RandomSpawner
+{ DropItem "Q2Rockets", 125
+  DropItem "Q2Cell", 100
+  DropItem "Q2Bullets", 150 }
+
+Actor TankCommander : Tank
+{
+	Health 1000
+	Radius 24
+	Scale 1.1
+	Obituary "%o was pumped full of lead by a \c[g3]Tank \c[q3]Commander."
+	+NOINFIGHTSPECIES
+	Species "TankC"
+	Tag "\c[g3]Tank \c[q3]Commander"
+}
+
+Actor TankBoss : Q2SoldierBase
+{
+	SeeSound "TankBoss/Sight"
+	ActiveSound "TankBoss/Active"
+	PainSound "TankBoss/Pain"
+	AttackSound "Infantry/Attack1"
+	DeathSound "TankBoss/Death"
+	+NOFEAR +NORADIUSDMG
+	+BOSS +BOSSDEATH +DONTMORPH
+	+NOINFIGHTSPECIES
+	Health 1500
+	Speed 12
+	PainChance 30
+	PainChance "BFG", 20
+	PainChance "BFGSplash", 5
+	DamageFactor "BFGSplash", 0.5
+	DamageFactor "BFGSplash", 0.33
+	Mass 6000
+	Radius 100
+	Height 100
+	Obituary "%o was killed by a \c[o6]Super Tank."
+	DropItem "Q2TankRandomSpawner", 100
+	Species "Supertank"
+	Tag "\c[o6]Super Tank"
+	States
+	{
+	Spawn:
+		TNK0 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 6 A_Look
+		TNK6 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 6 A_Look
+		TNK1 AB 6 A_Look
+		Loop
+	See:
+		TNK1 C 0 A_PlaySound("TankBoss/Engine",CHAN_BODY,0.5,1)
+		TNT1 A 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_TakeInventory(Clip)
+		TNK1 CDEFGHIJKLMNOPQRST 3 A_Chase
+		Loop
+	Missile:
+		"----" A 0 A_Jump(96,"Rockets")
+		"----" A 5 A_FaceTarget
+		TNK2 A 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 A 3 A_CustomBulletAttack(8,8,1,3)
+		TNK2 B 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 B 4 A_CustomBulletAttack(8,8,1,4)
+		TNK2 C 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 C 3 A_CustomBulletAttack(8,8,1,3)
+		TNK2 D 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 D 4 A_CustomBulletAttack(8,8,1,4)
+		TNK2 E 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 E 3 A_CustomBulletAttack(8,8,1,3)
+		TNK2 F 0 A_SpawnItemEx(EnemyFlashSpawner,24,47,82) TNT1 A 0 A_SpawnItemEx(WeaponFlash,24,47,82) TNK2 F 4 A_CustomBulletAttack(8,8,1,4)
+		TNK2 A 0 A_JumpIfInventory(Clip,6,3)
+		TNT1 A 0 A_GiveInventory(Clip,1)
+		TNT1 A 0 A_Jump(256,2)
+		TNT1 A 0 A_Jump(32,2)
+		TNT1 A 0 A_MonsterReFire(96,1)
+		Goto Missile+2
+		TNK2 GHIJKLMNOPQRST 3
+		Goto See
+	Rockets:
+		"----" A 5 A_FaceTarget
+		TNK3 A 0 A_PlaySound("Tank/Attack4",0)
+		TNK3 ABCDEFG 4 A_FaceTarget
+		TNK3 H 0 A_PlayWeaponSound("Tank/Attack1")
+		TNK3 H 3 A_CustomMissile(Rocket,102,-30)
+		TNK3 IJ 3 A_FaceTarget
+		TNK3 K 0 A_PlayWeaponSound("Tank/Attack1")
+		TNK3 K 3 A_CustomMissile(Rocket,98,-40)
+		TNK3 LM 3 A_FaceTarget
+		TNK3 N 0 A_PlayWeaponSound("Tank/Attack1")
+		TNK3 N 3 A_CustomMissile(Rocket,95,-51)
+		TNK3 "OPQRSTUVWXYZ^" 4
+		Goto See
+	Pain:
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 0 A_Pain
+		"----" A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+		"----" A 3
+		TNK4 ABCD 4
+		Goto See
+	Pain2:
+		"----" A 3
+		TNK4 EFGH 4
+		Goto See
+	Pain3:
+		"----" A 3
+		TNK4 IJKL 4
+		Goto See
+	Death:
+		TNT1 A 0 A_StopSound(CHAN_BODY)
+		TNT1 A 0 A_Scream
+		TNK5 ABCDEFGHIJKLMNOPQR 5
+		TNK5 S 2
+		TNK5 U 0 A_BossDeath
+		TNK5 SSSS 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,80),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNK5 SSSS 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,80),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNK5 SSSS 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,80),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNK5 SSSS 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,80),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNK5 SSSS 0 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,80),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNT1 A 0 A_Fall
+		TNT1 AAAAAAAAAAAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(Radius),0,Random(0,80),2,0,Random(0,10),Random(1,360))
+		TNT1 A 5 A_XScream
+		Stop
+	XDeath:
+		Stop
+	}
+}
+
+Actor Hornet : Q2SoldierBase
+{
+	SeeSound "Hornet/Sight"
+	ActiveSound ""
+	PainSound "Hornet/Pain"
+	AttackSound "Infantry/Attack1"
+	DeathSound "Hornet/Death"
+	+NOFEAR +NORADIUSDMG
+	+BOSS +BOSSDEATH +DONTMORPH +FLOAT +NOGRAVITY +FLOATBOB
+	+NOINFIGHTSPECIES
+	Health 3000
+	Speed 8
+	PainChance 6
+	PainChance "BFG", 20
+	PainChance "BFGSplash", 5
+	DamageFactor "BFGSplash", 0.5
+	DamageFactor "BFGSplash", 0.33
+	Mass 2000
+	Radius 64
+	Height 100
+	Obituary "%o was chaingunned by a \c[d5]Flying Boss"
+	//DropItem "Q2Bullets" 128
+	//DropItem "Q2Bullets" 128
+	//DropItem "Q2Rockets" 128
+	//DropItem "Q2Rockets" 128
+	Species "Hornet"
+	Tag "\c[d5]Hornet"
+	States
+	{
+	Spawn:
+		HNT0 A 0 NoDelay A_PlaySound("Hornet/Engine",CHAN_BODY,0.66,1)
+		HNT0 ABCDEFGHIJKLMNOPQRST 3 A_Look
+		Loop
+	See:
+		HNT0 A 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_TakeInventory(Clip)
+		HNT0 ABCDEFGHIJKLMNOPQRST 3 A_Chase
+		Loop
+	Missile:
+		TNT1 A 0 A_Jump(97,"Rockets")
+		HNT1 ABCDEFGHIJ 3 A_FaceTarget
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,40,55,72) TNT1 A 0 A_SpawnItemEx(WeaponFlash,40,55,72)
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,43,-50,73) TNT1 A 0 A_SpawnItemEx(WeaponFlash,43,-50,73)
+		HNT1 K 3 A_CustomBulletAttack(10,10,2,3)
+		HNT1 J 0 A_SpawnItemEx(EnemyFlashSpawner,40,55,72) TNT1 A 0 A_SpawnItemEx(WeaponFlash,40,55,72)
+		HNT1 J 0 A_SpawnItemEx(EnemyFlashSpawner,43,-50,73) TNT1 A 0 A_SpawnItemEx(WeaponFlash,43,-50,73)
+		HNT1 J 4 A_CustomBulletAttack(10,10,2,3)
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,40,55,72) TNT1 A 0 A_SpawnItemEx(WeaponFlash,40,55,72)
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,43,-50,73) TNT1 A 0 A_SpawnItemEx(WeaponFlash,43,-50,73)
+		HNT1 K 3 A_CustomBulletAttack(10,10,2,3)
+		HNT1 J 0 A_SpawnItemEx(EnemyFlashSpawner,40,55,72) TNT1 A 0 A_SpawnItemEx(WeaponFlash,40,55,72)
+		HNT1 J 0 A_SpawnItemEx(EnemyFlashSpawner,43,-50,73) TNT1 A 0 A_SpawnItemEx(WeaponFlash,43,-50,73)
+		HNT1 J 4 A_CustomBulletAttack(10,10,2,3)
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,40,55,72) TNT1 A 0 A_SpawnItemEx(WeaponFlash,40,55,72)
+		HNT1 K 0 A_SpawnItemEx(EnemyFlashSpawner,43,-50,73) TNT1 A 0 A_SpawnItemEx(WeaponFlash,43,-50,73)
+		HNT1 K 3 A_CustomBulletAttack(10,10,2,3)
+		HNT1 KK 3 A_FaceTarget
+		TNT1 A 0 A_SpidRefire
+		Goto Missile+11
+		HNT1 JIHGFEDCBA 3
+		Goto See
+	Rockets:
+		HNT1 LMNOPQRSSS 3 A_FaceTarget
+		TNT1 A 0 A_PlayWeaponSound("Hornet/Rocket")
+		TNT1 A 0 A_CustomMissile(HornetRocket,26,-12)
+		TNT1 A 0 A_CustomMissile(HornetRocket,26,-4)
+		TNT1 A 0 A_CustomMissile(HornetRocket,26,10)
+		TNT1 A 0 A_CustomMissile(HornetRocket,26,16)
+		HNT1 SS 5 A_FaceTarget
+		HNT1 RQPONML 3 A_FaceTarget
+		Goto See
+	Pain:
+		"----" A 3 A_ChangeFlag(NOPAIN,1)
+		HNT2 A 3 A_Pain
+		HNT2 BCDEFGHIJKLMNOPQRSTUV 3
+		Goto See
+	Death:
+		"----" A 0 A_StopSound(CHAN_BODY)
+		"----" A 0 A_Gravity
+		"----" A 0 A_ChangeFlag(FLOATBOB,0)
+		"----" A 3 A_Scream
+		HNT3 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 3
+		HNT4 ABCDEFGHIJKLMNOPQRS 3
+		HNT4 T 2
+		TNT1 A 0 A_BossDeath
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 3 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		HNT4 TTTT 0 A_SpawnItemEx(MakronExplosion,Random2(Radius),Random2(Radius),Random(0,40),0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNT4 A 0 A_Fall
+		TNT1 AAAAAAAAAAAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(Radius),0,Random(0,80),2,0,Random(0,10),Random(1,360))
+		TNT1 A 5 A_XScream
+		Stop
+	XDeath:
+		Stop
+	}
+}
+
+Actor HornetRocket : Q2Rocket 
+{ 
+    Speed 15 
+    Damage 10 
+    ExplosionDamage 64 
+	Obituary "%o almost dodged a \c[d5]Flying Boss's rocket"
+    DontHurtShooter 
+}
+
+Actor Jorg : Q2SoldierBase
+{
+	SeeSound "Jorg/Sight"
+	ActiveSound "Jorg/Active"
+	PainSound "Makron/Pain"
+	AttackSound "Makron/Attack4"
+	DeathSound "Makron/Death"
+	+NOINFIGHTSPECIES
+	+NOFEAR 
+	+NORADIUSDMG
+	+BOSS 
+	+BOSSDEATH 
+	+DONTMORPH
+	+FULLVOLACTIVE
+	Health 3000
+	Speed 18
+	PainChance 10
+	PainChance "BFG", 20
+	PainChance "BFGSplash", 5
+	DamageFactor "BFGSplash", 0.5
+	DamageFactor "BFGSplash", 0.33
+	Mass 3000
+	Radius 40
+	Height 110
+	DeathHeight 110
+	Obituary "%o was killed by the \c[q2]Jorg."
+	DropItem "Q2JorgRandomSpawner", 128
+	Species "Makron"
+	Tag "\c[q2]Jorg"
+	States
+	{
+	Spawn:
+		JRG0 A 0 A_Jump(192,2)
+		TNT1 A 0 A_PlaySound("Makron/Active",CHAN_VOICE)
+		JRG0 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 6 A_Look
+		Goto Spawn+1
+	See:
+		JRG1 A 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_TakeInventory(Clip)
+		JRG1 AB 4 A_Chase(0,0,CHF_DONTMOVE)
+		JRG1 C 0 A_PlaySound("Makron/Step",CHAN_BODY)
+		JRG1 C 4 A_Chase(0,0,CHF_DONTMOVE)
+		JRG1 DEFG 4 A_Chase
+		JRG1 HI 4 A_Chase(0,0,CHF_DONTMOVE)
+		JRG1 J 0 A_PlaySound("Makron/Step",CHAN_5)
+		JRG1 J 4  A_Chase(0,0,CHF_DONTMOVE)
+		JRG1 KLMN 3 A_Chase
+		Loop
+	Missile:
+		"----" A 0 A_Jump(96,"BFG")
+		"----" A 0 A_StopSound(CHAN_BODY)
+		"----" A 8 A_FaceTarget
+		JRG2 A 0 A_PlaySound("Makron/Attack1",CHAN_5)
+		JRG2 ABCDEFGH 4 A_FaceTarget
+		JRG2 I 0 A_PlaySound("Makron/Attack3",CHAN_5,1.0,1)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 I 3 A_CustomBulletAttack(10,10,1,5)
+		JRG2 J 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 J 4 A_CustomBulletAttack(10,10,1,5)
+		JRG2 K 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 K 3 A_CustomBulletAttack(10,10,1,5)
+		JRG2 L 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 L 4 A_CustomBulletAttack(10,10,1,5)
+		JRG2 M 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 M 3 A_CustomBulletAttack(10,10,1,5)
+		JRG2 N 0 A_SpawnItemEx(EnemyFlashSpawner,70,43,67) TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,70,-43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,43,67) TNT1 A 0 A_SpawnItemEx(WeaponFlash,70,-43,67)
+		JRG2 N 4 A_CustomBulletAttack(10,10,1,5)
+		JRG2 I 0 A_MonsterRefire(128,2)
+		Goto Missile+12
+		TNT1 A 0 A_PlaySound("Makron/Attack5",CHAN_5)
+		JRG2 OPQR 6 A_FaceTarget
+		Goto See
+	BFG:
+		"----" A 0 A_StopSound(CHAN_BODY)
+		"----" A 8 A_FaceTarget
+		JRG3 A 0 A_PlaySound("Makron/Attack2",0)
+		JRG3 ABCDE 3 A_FaceTarget
+		JRG3 F 0 A_PlayWeaponSound("Weapons/BFG10KShot")
+		JRG3 F 4 A_CustomMissile(MakronBFGBall,85,-5)
+		JRG3 GHIJKLM 3 A_FaceTarget
+		Goto See
+	Pain:
+		"----" A 0 A_StopSound(CHAN_5)
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 0 A_Jump(256,"Pain1","Pain2")
+	Pain1:
+		"----" A 4 A_Pain
+		JRG4 AB 9
+		Goto See
+	Pain2:
+		"----" A 4 A_Pain
+		JRG3 NOP 6
+		Goto See
+	Pain.BFGSplash:
+	Pain.BFG:
+		"----" A 0 A_StopSound(CHAN_5)
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 4 A_PlaySound("Makron/Pain3",CHAN_VOICE)
+		JRG4 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\" 5
+		Goto See
+	XDeath:
+		Stop
+	Death:
+		TNT1 A 0 A_StopSound(CHAN_5)
+		TNT1 A 0 A_SetShootable
+		TNT1 A 0 A_Scream
+		JRG5 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 4
+		JRG6 ABCDEFGHIJKLMNOPQ 5
+		JRG6 R 6 A_Fall
+		JRG6 S 6 A_PlaySound("Makron/Deathb")
+		JRG6 T 4 A_SetSolid
+		JRG6 U 35
+		JRG6 U 0 A_BossDeath
+		TNT1 A 0 A_GiveInventory(Cell)
+		JRG6 UUUU 8 A_SpawnItemEx(MakronExplosion,Random2(64),Random2(64),0,0,0,0,0,SXF_TRANSFERPOINTERS)
+		JRG6 UUUU 4 A_SpawnItemEx(MakronExplosion,Random2(64),Random2(64),0,0,0,0,0,SXF_TRANSFERPOINTERS)
+		JRG6 UUUU 0 A_SpawnItemEx(MakronExplosion,Random2(64),Random2(64),0,0,0,0,0,SXF_TRANSFERPOINTERS)
+		TNT1 A 0 A_UnSetSolid
+		TNT1 A 0 A_UnSetShootable
+		TNT1 A 0 A_XScream
+		TNT1 AAAAAAAAAAAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(64),0,Random(0,64),2,0,Random(0,10),Random(1,360))
+		JRG6 U 5 A_SpawnItemEx(Makron,0,0,0,0,0,5,0,SXF_TRANSFERPOINTERS|SXF_SETMASTER)
+		Stop
+	}
+}
+Actor MakronExplosion
+{
+	+NOINTERACTION
+	Projectile
+	ExplosionDamage 32
+	ExplosionRadius 97
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_PlaySound("Weapons/RocketExplosion",CHAN_5)
+		TNT1 A 0 A_SpawnItem(Q2Explosion)
+		TNT1 A 0 A_Explode
+		Stop
+	}
+}
+Actor MakronBFGBall : BFG10KBall
+{
+	Damage 100
+	ExplosionDamage 64
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_SpawnItem(BFG10KOrbitParticleSpawner)
+		TNT1 A 0 A_ChangeFlag(MISSILE,1)
+		TNT1 A 0 A_JumpIf(VelX==0&&VelY==0,"Death")
+		TNT1 A 0 A_PlaySound("Weapons/BFG10KFly",1,0.66,1)
+		BFS1 ABAB 4 Bright
+		BFS1 AABB 2 Bright A_SpawnItem(MakronBFGBeamSpawner,0,0)
+		Goto Spawn+8
+	Death:
+		BFE1 A 5 Bright A_StopSound(1)
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		BFE1 B 5 Bright
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx(BFG10KExplosionParticle,0,0,0,random(-4,4),random(-4,4),random(-4,4),random(1,360))
+		TNT1 A 0 A_Explode
+		BFE1 C 5 Bright A_BFGSpray("BFGExtra",20,10)
+		TNT1 A 0 A_GiveInventory(Clip,1)
+		BFE1 DEF 5 Bright
+		Stop
+	}
+}
+ACTOR MakronBFGBeamSpawner : BFG10KBeamSpawner
+{
+	Health 4
+	ReactionTime 3
+}
+
+Actor Q2JorgRandomSpawner : RandomSpawner
+{ DropItem "Q2Bullets", 128
+  DropItem "Q2CellPack", 128 }
+
+Actor Makron : Jorg
+{
+	SeeSound "Jorg/Voice"
+	ActiveSound "Jorg/Active"
+	PainSound "Jorg/Pain"
+	AttackSound "Jorg/Attack4"
+	DeathSound "Jorg/Death"
+	+FULLVOLACTIVE
+	+NOINFIGHTSPECIES
+	Speed 12
+	PainChance 20
+	PainChance "Railgun", 100
+	Obituary "%o was killed by the \c[q2]Makron."
+	DropItem "Q2Slugs" 128
+	Species "Makron"
+	Tag "\c[q2]The Makron"
+	States
+	{
+	Eject:
+		JRG0 ABCDEF 5
+		JRG0 G 5 A_PlaySound("Jorg/Land",CHAN_BODY)
+		JRG0 HIKLM 5
+		Goto Spawn+1
+	Spawn:
+		JRG4 A 0 NoDelay A_JumpIfInventory(Cell,1,"Eject",AAPTR_MASTER)
+		JRG4 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 6 A_Look
+		JRG5 A 0 A_PlaySound("Jorg/Laugh",CHAN_VOICE)
+		JRG5 "ABCDEFGHIJKLMNOPQRSTUVWXYZ\[]" 6 A_Look
+		JRG2 YZ 6 A_Look
+		JRG4 A 0 A_PlaySound("Jorg/Laugh",CHAN_VOICE)
+		Goto Spawn+1
+	See:
+		JRG6 J 0 A_ChangeFlag(NOPAIN,0)
+		TNT1 A 0 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG6 JA 5 A_Chase
+		JRG6 BCD 4 A_Chase
+		JRG6 E 0 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG6 EF 5 A_Chase
+		JRG6 GHI 4 A_Chase
+		Loop
+	Missile:
+		"----" A 0 A_Jump(160,"Railgun","Blaster")
+		"----" A 3
+		JRG0 NOP 4 A_FaceTarget
+		JRG0 Q 0 A_PlayWeaponSound("Weapons/BFG10KShot")
+		JRG0 Q 4 A_CustomMissile(MakronBFGBall,55,-23)
+		JRG0 RSTUV 4
+		Goto See
+	Blaster:
+		"----" A 3
+		JRG1 ABC 5 A_FaceTarget(0,0)
+		JRG1 E 0 A_CustomMissile(BlasterProjectile,50,-20,50) TNT1 A 0 A_FaceTarget JRG1 E 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 F 0 A_CustomMissile(BlasterProjectile,50,-16,40) TNT1 A 0 A_FaceTarget JRG1 F 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 G 0 A_CustomMissile(BlasterProjectile,50,-12,30) TNT1 A 0 A_FaceTarget JRG1 G 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 H 0 A_CustomMissile(BlasterProjectile,50,-5,20) TNT1 A 0 A_FaceTarget JRG1 H 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 I 0 A_CustomMissile(BlasterProjectile,50,5,10) TNT1 A 0 A_FaceTarget JRG1 I 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 J 0 A_CustomMissile(BlasterProjectile,52,18,0) TNT1 A 0 A_FaceTarget JRG1 J 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 K 0 A_CustomMissile(BlasterProjectile,52,33,-15) TNT1 A 0 A_FaceTarget JRG1 K 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 L 0 A_CustomMissile(BlasterProjectile,52,35,-30) TNT1 A 0 A_FaceTarget JRG1 L 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 M 0 A_CustomMissile(BlasterProjectile,52,35,-45) TNT1 A 0 A_FaceTarget JRG1 M 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 N 0 A_CustomMissile(BlasterProjectile,52,30,-30) TNT1 A 0 A_FaceTarget JRG1 N 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 O 0 A_CustomMissile(BlasterProjectile,50,23,-15) TNT1 A 0 A_FaceTarget JRG1 O 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 P 0 A_CustomMissile(BlasterProjectile,50,23,0) TNT1 A 0 A_FaceTarget JRG1 P 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 Q 0 A_CustomMissile(BlasterProjectile,50,16,8) TNT1 A 0 A_FaceTarget JRG1 Q 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 R 0 A_CustomMissile(BlasterProjectile,50,8,16) TNT1 A 0 A_FaceTarget JRG1 R 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 S 0 A_CustomMissile(BlasterProjectile,50,0,25) TNT1 A 0 A_FaceTarget JRG1 S 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 T 0 A_CustomMissile(BlasterProjectile,50,-8,33) TNT1 A 0 A_FaceTarget JRG1 T 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 U 0 A_CustomMissile(BlasterProjectile,50,-17,42) TNT1 A 0 A_FaceTarget JRG1 U 3 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 V 0 A_CustomMissile(BlasterProjectile,50,-25,50) TNT1 A 0 A_FaceTarget JRG1 V 4 A_PlayWeaponSound("Jorg/Blaster")
+		JRG1 WXYZ 4
+		Goto See
+	Railgun:
+		"----" A 3
+		JRG2 A 0 A_PlayWeaponSound("Weapons/RailGunCharge")
+		JRG2 ABCDEFG 4 A_FaceTarget
+		JRG2 H 3 A_CustomRailgun(Random(40,80),5,"2F 67 7F","White",RGF_FULLBRIGHT,1,0,"Q2RailgunPuff",0,0,8129,35,1,1,None,3)
+		JRG2 IJKLMNOP 3 A_FaceTarget
+		Goto See
+	Pain:
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 0 A_Jump(256,"Pain1","Pain2")
+	Pain1:
+		"----" A 4 A_Pain
+		JRG2 QRST 3
+		Goto See
+	Pain2:
+		"----" A 4 A_Pain
+		JRG2 UVWX 3
+		Goto See
+	Pain.Railgun:
+		"----" A 0 A_ChangeFlag(NOPAIN,1)
+		"----" A 4 A_Pain
+		JRG3 ABCDEF 4
+		JRG3 GHIJKLMNO 3
+		JRG3 P 0 A_PlaySound("Jorg/Popup",CHAN_BODY)
+		JRG3 "PQRSTUVWXYZ^" 4
+		JRG6 J 0 A_PlaySound("Jorg/Voice",CHAN_VOICE)
+		Goto Missile
+	Pain.BFGSplash:
+	Pain.BFG:
+		Stop
+	Death:
+		TNT1 A 0 A_Scream
+		TNT1 AAAAA 0 A_SpawnItemEx(Q2Gib,0,0,50,2,0,Random(0,10),Random(1,360),0,128)
+		TNT1 A 0 A_SpawnItemEx(MakronTorso,0,0,50,Random(1,2),Random2(2),5)
+		JRG7 AB 4
+		JRG7 C 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG7 DEFGHIJKLMNO 4
+		JRG7 P 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG7 "QRSTUVWXYZ\[]" 4
+		JRG8 ABCD 4
+		JRG8 E 4 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG8 FGHIJKLMNOPQRSTUVWXY 4
+		JRG8 Z 4 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG8 "\" 4
+		JRG8 "[" 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG8 "]" 4
+		JRG9 ABCDE 4
+		JRG9 F 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG9 G 4
+		JRG9 H 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG9 IJ 4
+		JRG9 K 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG9 L 4
+		JRG9 M 3 A_PlaySound("Jorg/Step",CHAN_BODY)
+		JRG9 "NOPQRSTUVWXYZ\[]" 4
+		JRGA ABCD 4
+		JRGA E 0 A_NoBlocking
+		TNT1 A 0 A_PlaySound("Jorg/Brain",CHAN_BODY)
+		JRGA E 3 A_PlaySound("Jorg/Step",CHAN_AUTO)
+		JRGA FG 4
+		JRGA H -1 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		Stop
+	Raise:
+		Stop
+	}
+}
+Actor MakronTorso
+{
+	+CORPSE +ISMONSTER
+	Gravity 0.66
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_SetPitch(-75)
+		JRG0 A 1 A_GiveInventory(Clip,3)
+		TNT1 A 0 A_JumpIfInventory(Clip,80,2)
+		TNT1 A 0 A_SetPitch(Pitch+3)
+		TNT1 A 0
+		Goto Spawn+1
+	Crash:
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_SetPitch(0)
+		TNT1 A 0 A_PlaySound("Jorg/Spine",CHAN_BODY,1.0,1)
+		JRG0 ABCDEFGHIJKLMNOPQRST 4
+		JRG0 A 0 A_CountDown
+		Goto Crash+3
+	Death:
+		"----" A -1 A_StopSound(CHAN_BODY)
+		Stop
+	}
+}
+
+Actor Q1Ranger : Q2SoldierBase
+{
+	Health 100
+	PainChance 96
+	SeeSound "Ranger/Sight"
+	ActiveSound "Ranger/Idle"
+	PainSound "Ranger/Pain"
+	DeathSound "Ranger/Death"
+	+NOINFIGHTSPECIES
+	Species "Q1Ranger"
+	Obituary "%o died misteriously."
+	var int user_weapon;
+	GibHealth 50
+	States
+	{
+	Spawn:
+		QPL0 ABCDE 4 A_Look
+		Loop
+	See:
+		QPL0 F 0 A_Jump(256,"Select")
+		TNT1 A 0 A_ChangeFlag(NOPAIN,0)
+		QPL0 FF 2 A_FastChase
+		QPL0 GGHHIIJJKK 2 A_Chase
+		GOto See+1
+	Select:
+		TNT1 A 0 A_JumpIf(user_weapon<2,1)
+		Goto See+1
+		TNT1 A 0 A_SetUserVar(user_weapon,Random(2,8))
+		Goto See+1
+	Missile:
+		TNT1 A 0 A_JumpIf(user_weapon==2,"Shotgun")
+		TNT1 A 0 A_JumpIf(user_weapon==3,"SSG")
+		TNT1 A 0 A_JumpIf(user_weapon==4,"Nailgun")
+		TNT1 A 0 A_JumpIf(user_weapon==5,"SNG")
+		TNT1 A 0 A_JumpIf(user_weapon==6,"Grenade")
+		TNT1 A 0 A_JumpIf(user_weapon==7,"Rocket")
+		TNT1 A 0 A_JumpIf(user_weapon==8,"Lightning")
+	Shotgun:
+		QPL1 L 4 A_FaceTarget
+		QPL1 M 0 A_PlayWeaponSound("Ranger/Attack1")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_CustomBulletAttack(8,8,3,2)
+		QPL1 MNOP 4 A_FaceTarget
+		TNT1 A 0 A_Jump(64,"See")
+		TNT1 A 0 A_CPosRefire
+		Goto Shotgun
+	SSG:
+		QPL1 L 4 A_FaceTarget
+		QPL1 M 0 A_PlayWeaponSound("Ranger/Attack1b")
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_CustomBulletAttack(12,12,10,2)
+		QPL1 MNO 4 A_FaceTarget
+		QPL1 P 10 A_FaceTarget
+		TNT1 A 0 A_Jump(64,"See")
+		TNT1 A 0 A_CPosRefire
+		Goto SSG
+	SNG:
+		QPL1 A 4 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 A 4 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 A 4 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 A 4 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 A 4 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/SNG")
+		TNT1 A 0 A_CustomMissile(RangerSNGNail,36,12)
+		Goto See
+	Nailgun:
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 A 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		QPL1 B 3 A_FaceTarget
+		TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Weapons/ShotgunFire")
+		TNT1 A 0 A_CustomMissile(RangerNail,36,12)
+		Goto See
+	Grenade:
+		TNT1 A 0 A_JumpIfCloser(1024,1)
+		Goto See
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack2")
+		TNT1 A 0 A_CustomMissile(RangerGrenade,36,12,0,CMF_OFFSETPITCH,Random(5,10))
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 5
+		TNT1 A 0 A_Jump(192,"See")
+		TNT1 A 0 A_JumpIfCloser(1024,1)
+		Goto See
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack2")
+		TNT1 A 0 A_CustomMissile(RangerGrenade,36,12,0,CMF_OFFSETPITCH,Random(5,10))
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 5
+		TNT1 A 0 A_Jump(160,"See")
+		TNT1 A 0 A_JumpIfCloser(1024,1)
+		Goto See
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack2")
+		TNT1 A 0 A_CustomMissile(RangerGrenade,36,12,0,CMF_OFFSETPITCH,Random(5,10))
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 10
+		Goto See
+	Rocket:
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack3")
+		TNT1 A 0 A_CustomMissile(RangerRocket,36,12)
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 12
+		TNT1 A 0 A_Jump(128,"See")
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack3")
+		TNT1 A 0 A_CustomMissile(RangerRocket,36,12)
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 12
+		TNT1 A 0 A_Jump(128,"See")
+		QPL1 E 4 A_FaceTarget
+		QPL1 F 0 A_SpawnItem(WeaponFlash,0,32)
+		TNT1 A 0 A_PlayWeaponSound("Ranger/Attack3")
+		TNT1 A 0 A_CustomMissile(RangerRocket,36,12)
+		QPL1 FGHI 3 A_FaceTarget
+		QPL1 J 12
+		Goto See
+	Lightning:
+		TNT1 A 0 A_JumpIfCloser(768,1)
+		Goto See
+		QPL1 C 8 A_FaceTarget
+		TNT1 A 0 A_PlayWeaponSound("Weapons/LightningStart")
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		TNT1 A 0 A_PlaySound("Weapons/Lightning",CHAN_5)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		TNT1 A 0 A_PlaySound("Weapons/Lightning",CHAN_5)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		QPL1 D 3 A_FaceTarget TNT1 A 0 A_CustomMissile(RangerThunderBoltLightning,38,12)
+		Goto See
+	Pain:
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Pain
+		QPL0 LMNOPQ 3
+		Goto See
+	Death:
+		TNT1 A 0 A_JumpIf(user_weapon>3,2)
+		TNT1 A 0 A_DropItem(ShellBox)
+		Goto DeathAnim
+		TNT1 A 0 A_JumpIf(user_weapon>5,6)
+		TNT1 A 0 A_DropItem(ClipBox)
+		TNT1 A 0 A_JumpIf(user_weapon==5,3)
+		TNT1 A 0 A_Jump(256,"DeathAnim")
+		TNT1 A 0 A_Jump(192,"DeathAnim")
+		TNT1 A 0 A_DropItem(Q1SNG)
+		Goto DeathAnim
+		TNT1 A 0 A_JumpIf(user_weapon>7,2)
+		TNT1 A 0 A_DropItem(RocketBox)
+		Goto DeathAnim
+		TNT1 A 0 A_Jump(128,2)
+		TNT1 AA 0 A_DropItem(Cell)
+		TNT1 A 0 A_Jump(192,"DeathAnim")
+		TNT1 A 0 A_DropItem(Q1LightningGun)
+		Goto DeathAnim
+	DeathAnim:
+		TNT1 A 0 A_ScreamAndUnblock
+		TNT1 A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		TNT1 A 0 A_Jump(256,"Death1","Death2","Death3","Death4","Death5")
+	Death1:
+		QPL2 ABCDEFGHIJ 3
+		QPL2 K -1
+		Stop
+	Death2:
+		QPL2 LMNOPQRS 3
+		QPL2 T -1
+		Stop
+	Death3:
+		QPL3 ABCDEFGHIJKLMN 3
+		QPL3 O -1
+		Stop
+	Death4:
+		QPL3 PQRSTUVW 3
+		QPL3 X -1
+		Stop
+	Death5:
+		QPL4 ABCDEFGH 3
+		QPL4 I -1
+		Stop
+	XDeath:
+		TNT1 A 0 A_JumpIf(user_weapon>3,2)
+		TNT1 A 0 A_DropItem(ShellBox)
+		Goto XDeathAnim
+		TNT1 A 0 A_JumpIf(user_weapon>5,6)
+		TNT1 A 0 A_DropItem(ClipBox)	
+		TNT1 A 0 A_JumpIf(user_weapon==5,3)
+		TNT1 A 0 A_Jump(256,"XDeathAnim")
+		TNT1 A 0 A_Jump(192,"XDeathAnim")
+		TNT1 A 0 A_DropItem(Q1SNG)
+		Goto XDeathAnim
+		TNT1 A 0 A_JumpIf(user_weapon>7,2)
+		TNT1 A 0 A_DropItem(RocketBox)
+		Goto XDeathAnim
+		TNT1 A 0 A_Jump(128,2)
+		TNT1 AA 0 A_DropItem(Cell)
+		TNT1 A 0 A_Jump(192,"XDeathAnim")
+		TNT1 A 0 A_DropItem(Q1LightningGun)
+		Goto XDeathAnim
+	XDeathAnim:
+		TNT1 A 0 A_PlaySound("Ranger/XDeath")
+		TNT1 AAAAAAAA 0 A_SpawnItemEx(Q2Gib,Random2(20),0,Random(0,50),Random(0,5),0,Random(0,10),Random(1,360))
+		TNT1 A 1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}
+Actor RangerNail : SNGNail
+{
+	+STRIFEDAMAGE
+	Damage 3
+}
+Actor RangerSNGNail : RangerNail { Damage 4 }
+Actor RangerGrenade : Q2Grenade
+{
+	BounceSound "Ranger/Attack2b"
+	ExplosionDamage 64
+	Damage 10
+	Translation "221:221=176:176", "232:235=183:188"
+	DontHurtShooter
+	States
+	{
+	Death:
+		TNT1 A 0 A_PlaySound("Ranger/Attack2b")
+		Goto Super::Death+1
+	XDeath:
+		TNT1 A 0 A_PlaySound("Ranger/Attack3b")
+		Goto Super::XDeath+1
+	}
+}
+Actor RangerRocket : Q2Rocket
+{
+	DeathSound "Ranger/Attack3b"
+	ExplosionDamage 64
+	Damage 10
+	Speed 25
+	DontHurtShooter
+}
+Actor RangerThunderBoltLightning : ThunderBoltLightning { Damage (Random(0,3)) }
+
+Actor USMCSoldier : Q2SoldierBase
+{
+	Health 50
+	DeathSound "usmc/death"
+	PainSound "usmc/pain"
+	AttackSound "Weapons/MachineGunFire"
+	+NOINFIGHTSPECIES
+	Obituary "%o is dead, not big surprise."
+	DropItem "Q2Bullets" 128
+	Species "USMCSoldier"
+	DropItem "Q2MachineGun" 64
+	States
+	{
+	Spawn:
+		USM0 ABCDEFGHIJKLMNOPONMLKJIHGFEDCB 6 A_Look
+		Loop
+	See:
+		USM0 Q 0 A_TakeInventory(Clip)
+		TNT1 A 0 A_ChangeFlag(NOPAIN,0)
+		USM0 QRSTUV 3 A_Chase
+		Loop
+	Missile:
+		"----" A 8 A_FaceTarget
+		USM1 A 0 A_GiveInventory(Clip,1)
+		TNT1 A 0 A_SpawnItemEx(EnemyFlashSpawner,22,10,38) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		USM1 A 4 A_CustomBulletAttack(8,8,1,2*FRandom(1,2),"BulletPuff",0,CBAF_NORANDOM)
+		USM1 A 0 A_SpawnItemEx(EnemyFlashSpawner,22,10,38) TNT1 A 0 A_SpawnItem(WeaponFlash,0,32)
+		USM1 A 3 A_CustomBulletAttack(8,8,1,2*FRandom(1,2),"BulletPuff",0,CBAF_NORANDOM)
+		USM1 A 0 A_JumpIfInventory(Clip,10,2)
+		TNT1 A 0 A_Jump(256,2)
+		TNT1 A 0 A_Jump(97,"See")
+		TNT1 A 0
+		Goto Missile+1
+	Pain:
+		TNT1 A 0 A_Pain
+		TNT1 A 0 A_ChangeFlag(NOPAIN,1)
+		TNT1 A 0 A_Jump(256,"Pain1","Pain2","Pain3")
+	Pain1:
+		USM1 IJKL 3
+		Goto See
+	Pain2:
+		USM1 MNOP 3
+		Goto See
+	Pain3:
+		USM1 QRST 3
+		Goto See
+	Death:
+		"----" A 0 A_SpawnItemEx(DestroyableBodyThing,0,0,0,0,0,0,0,SXF_NOCHECKPOSITION|SXF_SETMASTER)
+		"----" A 0 A_ScreamAndUnblock
+		"----" A 0 A_Jump(256,"Death1","Death2","Death3")
+	Death1:
+		"----" A 3
+		USM2 ABCDE 4
+		USM2 F -1
+		Stop
+	Death2:
+		"----" A 3
+		USM2 GHIJK 4
+		USM2 L -1
+		Stop
+	Death3:
+		"----" A 3
+		USM2 NOPQRS 4
+		USM2 T -1
+		Stop
+	Raise:
+		"----" A 0 A_GiveInventory(ResurrectedToken,1)
+		"----" A 25 A_StopSound(CHAN_BODY)
+		"----" A 6 A_TakeInventory(ResurrectedToken,1)
+		Goto See
+	}
+}

@@ -1,0 +1,147 @@
+#Library "Tuvieja"
+#Include "ZCommon.acs"
+Global Bool 1: G_GameStarted;
+Global Int 2: G_BalanceWeaps;
+Global Int 3: G_GameSkill;
+Script "NoEsUnScript" Open
+{
+	G_BalanceWeaps = GetCvar("q2_balanceweaps");
+/*	If(G_GameStarted == False)
+	{
+		G_GameSkill = GameSkill();
+	}
+	G_GameStarted = True;*/
+}
+Script "GetCvarInfo" (Int which)
+{
+	Switch(which)
+	{
+		Case 0: SetResultValue(G_BalanceWeaps); Break;
+		Case 1: SetResultValue(GetCvar("q2_barrelanim")); Break;
+		Case 2: SetResultValue(GetCvar("q2_barrelinstant")); Break;
+		Case 3: SetResultValue(GetCVar("q2_alwaysdrop")); Break;
+	}
+}
+
+Script "GuardsAlwaysDrop" (void)
+{
+    SetResultValue(GetCVar("q2_alwaysdrop"));
+}
+Script "CosoDelOffset" (Int X, Int Y, Int Z) // Gran ayuda para colocar offsets con A_SpawnItemEx
+{
+	SetActivatorToTarget(0);
+	Int TID = UniqueTID();
+	Thing_ChangeTID(0,TID);
+	SpawnSpotForced("Wea",TID,666,0);
+	SetActivator(666);
+	SetPointer(AAPTR_TARGET,TID);
+	SetUserArray(666,"User_Offset",0,X);
+	SetUserArray(666,"User_Offset",1,Y);
+	SetUserArray(666,"User_Offset",2,Z);
+	Terminate;
+}
+Script "Q2Bandolier" (Void)
+{
+	If(CheckInventory("BandolierToken")==False&&CheckInventory("BackPackItem")==False)
+	{
+		GiveInventory("BandolierToken",1);
+		SetAmmoCapacity("Q2Shell",75);
+		SetAmmoCapacity("Q2Bullets",250);
+		SetAmmoCapacity("Q2Slugs",75);
+		SetAmmoCapacity("Q2Cell",250);
+		SetAmmoCapacity("Q2MagSlug",75);
+		SetAmmoCapacity("TrapAmmo",7);
+	}
+}
+Script "Q2HUDLowHealth" Enter
+{
+	Int PNum = PlayerNumber();
+	While(PNum == PlayerNumber())
+	{
+		Delay(1);
+//		Print(d:GetActorProperty(0,APROP_SpawnHealth));
+		If(GetActorProperty(0,0)<=25)//FixedMul(GetActorProperty(1200,APROP_SpawnHealth),0.25))
+		{ GiveInventory("HUDLowHP",1); Delay(20); TakeInventory("HUDLowHP",1); Delay(20); }
+	}
+}
+Script "Q2HUDHPDown" Enter
+{
+	Int PNum = PlayerNumber();
+	Int HP1,HP2;
+	While(PNum == PlayerNumber())
+	{
+		HP1 = GetActorProperty(0,0);
+		Delay(1);
+		HP2 = GetActorProperty(0,0);
+		If(HP2<HP1)
+		{ GiveInventory("HUDHPDown",1); Delay(6); TakeInventory("HUDHPDown",1);}
+	}
+}
+Script "Q2HUDArmorDown" Enter
+{
+	Int PNum = PlayerNumber();
+	Int A1,A2;
+	While(PNum == PlayerNumber())
+	{
+		A1 = CheckInventory("Armor");
+		Delay(1);
+		A2 = CheckInventory("Armor");
+		If(A2<A1)
+		{ GiveInventory("HUDArmorDown",1); Delay(6); TakeInventory("HUDArmorDown",1);}
+	}
+}/*
+Script "Q2JumpCheck" Enter
+{
+	Int PNum = PlayerNumber();
+	While(PNum == PlayerNumber())
+	{
+		While(GetActorVelZ(0)==0)
+		{
+			Delay(1);
+			If((GetPlayerInput(-1,INPUT_BUTTONS) & BT_JUMP) && GetActorVelZ(0)>1.0)
+			SetActorState(0,"Jump");
+		}
+		Delay(1);
+	}
+}
+Script "Q2CrouchCheck" Enter
+{
+	Int PNum = PlayerNumber();
+	While(PNum == PlayerNumber())
+	{
+		While((GetPlayerInput(-1,INPUT_BUTTONS) & BT_CROUCH) && GetActorProperty(0,APROP_Height)==28.0)
+		{
+			GiveInventory("IsCrouching",1);
+			TakeInventory("IsNOTCrouching",1);
+			Delay(1);
+			TakeInventory("IsCrouching",1);
+		}
+		GiveInventory("IsNOTCrouching",1);
+		TakeInventory("IsCrouching",1);
+		Delay(1);
+		TakeInventory("IsNOTCrouching",1);
+	}
+}*/
+Script "Q2TauntScript" (Int TauntIndex) Net
+{
+	If(GetActorProperty(0,0)<1)
+	Terminate;
+	Switch(TauntIndex)
+	{
+		Case 0:
+			SetActorState(0,"Taunt.Flip",1);
+			Break;
+		Case 1:
+			SetActorState(0,"Taunt.Salute",1);
+			Break;
+		Case 2:
+			SetActorState(0,"Taunt.Taunt",1);
+			Break;
+		Case 3:
+			SetActorState(0,"Taunt.Wave",1);
+			Break;
+		Case 4:
+			SetActorState(0,"Taunt.Point",1);
+			Break;
+	}
+}

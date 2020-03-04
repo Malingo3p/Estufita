@@ -1,0 +1,625 @@
+
+Class EffectBase : Actor// This actor was made by TheCamaleonMaligno to be used as base for effects (actor taken from  lomito)
+{
+	Default
+	{
+		RenderStyle "Add";
+		+NOINTERACTION
+		+CLIENTSIDEONLY
+		+FORCEXYBILLBOARD
+		+NOBLOCKMAP
+		+DONTSPLASH
+		+THRUACTORS
+		+NOTRIGGER
+		+NOBLOCKMONST
+		+NOTONAUTOMAP
+		Radius 0.5;
+		Height 1;
+		Gravity 0.66;
+		Species "VFX";
+	}
+	States
+	{
+	Spawn:
+		TNT1 A 4;
+		Stop;
+	}
+}
+Class TempPointLight : PointLight // aasd from lambda too asdasdsa
+{
+	Override Void Tick()
+	{
+		Super.Tick();
+		If(Tics<1)
+		Destroy();
+		If(!GlobalFreeze && !Level.Frozen || bNoTimeFreeze)
+		Tics--;
+	}
+}
+Class SoundThingie : EffectBase // more landa shit oh god
+{
+	Default { +INVISIBLE +NOTIMEFREEZE +NOSECTOR }
+	Override Void Tick()
+	{
+		If(Target)
+		SetOrigin(Target.Pos,0);
+		Else
+		Destroy();
+		Super.Tick();
+	}
+}
+Class InvBoolean : Inventory { Default { +INVENTORY.UNDROPPABLE } }
+Class BlankPuff : Actor
+{
+	Default
+	{
+		Height 0;
+		VSpeed 0;
+		+ALWAYSPUFF
+		+NOGRAVITY
+		+PUFFONACTORS
+		+SKYEXPLODE
+		+NOTIMEFREEZE
+		+BLOODLESSIMPACT
+		+NOTRIGGER
+		+THRUACTORS
+		+FORCEDECAL
+		+DONTSPLASH
+		Decal "";
+	}
+	States
+	{
+	Spawn:
+		TNT1 A 2;// NoDelay A_SpawnParticle("White",0,1,5);
+		Stop;
+	}
+}
+Class Q2BulletPuff : BulletPuff Replaces BulletPuff
+{
+	Default
+	{
+		-ALLOWPARTICLES
+		+ALLOWTHRUFLAGS
+		VSpeed 0;
+		DamageType "Bullet";
+		Decal "BulletChip";
+	}
+	States
+	{
+	Spawn:
+		TNT1 AAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticle",FRandom(0,12),0,FRandom(-8,15),FRandom(0,0.5),0,FRandom(-1,-0.1),Random(1,360));
+		TNT1 A 0 A_Jump(128,"Null");
+		TNT1 A 0 A_PlaySound("World/Ricochet",1,0.5);
+		TNT1 A 0 A_SpawnItem("Q2BulletPuffFlash");
+		Stop;
+	}
+}
+Class Q2BulletPuffParticle : EffectBase
+{
+	Default
+	{
+		+BRIGHT;
+		RenderStyle "Normal";
+		Scale 1.5;
+	}
+	States
+	{
+	Spawn:
+		P001 ABCDEFGH 0 A_Jump(64,"Fade");
+		Loop;
+	Fade:
+		"----" A 5;
+		"----" A 1 A_FadeOut;
+		Wait;
+	}
+}
+Class Q2BulletPuffFlash : EffectBase
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0;
+		TNT1 A 0 A_SpawnItemEx("Q2BulletPuffSmoke",0,0,0,0,0,FRandom(0,0.5));
+		PUFF A 5 Bright;
+		PUFF B 1 Bright;
+		Stop;
+	}
+}
+Class Q2BulletPuffSmoke : EffectBase
+{
+	Default { RenderStyle "Translucent"; }
+	States
+	{
+	Spawn:
+		TNT1 A 0;
+		PUFF ABC 4 A_FadeOut(0.25);
+		PUFF D 2;
+		Stop;
+	}
+}
+Class Q2Blood : Blood Replaces Blood
+{
+	Default {
+	-ALLOWPARTICLES +DONTTRANSLATE +PUFFGETSOWNER
+	//Translation "80:100=[255,128,0]:[255,0,0]", "101:111=[255,0,0]:[98,0,0]";
+	Translation "80:111=[64,0,0]:[192,0,0]"; }
+	States
+	{
+	Spawn:
+		TNT1 AAAA 0;
+		TNT1 A 0
+		{
+			If(!target) return;
+			If(target.CountInv("PowerInvuln"))
+			{
+				Actor Puff=Spawn("BulletPuff",pos,ALLOW_REPLACE);
+				Puff.target=target;
+				SetStateLabel("Null");
+				return;
+			}
+			Let Shield=Inventory(target.FindInventory("Q2PowerShield"));
+			If(Shield && Shield.special1)
+			{
+				for(int i=0;i<13;i++)
+				{
+					Color Col=Color(255,90,90,90+random(0,40));
+					bool suckie;
+					actor duckie;
+					[suckie, duckie]=A_SpawnItemEx("Q2BulletPuffParticle",FRandom(0,12),0,FRandom(-8,15),FRandom(0,0.5),0,FRandom(-1,-0.1),Random(1,360));
+					duckie.A_SetRenderStyle(1.0,STYLE_ADDSHADED);
+					duckie.SetShade(Col);
+				}
+				SetStateLabel("Null");
+			}
+		}
+		TNT1 AAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticle",FRandom(0,12),0,FRandom(-8,15),FRandom(0,0.5),0,FRandom(-1,-0.1),Random(1,360),SXF_TRANSFERTRANSLATION);
+		Stop;
+	}
+}
+Class Q2BloodSplatter : Q2Blood Replaces BloodSplatter {}
+Class Q2GibSpawner : EffectBase
+{
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_XScream;
+		TNT1 AAAAAAAA 0
+		{
+			bool dicke;
+			actor balls;
+			Double R=20;
+			Double H=50;
+			If(target)
+			{
+				r=target.radius;
+				h=target.default.height;
+			}
+			[dicke, balls]=A_SpawnItemEx("Q2Gib",Random2(r),0,Random(0,h),Random(0,5),0,Random(0,10),Random(1,360));
+			if(target)
+			balls.vel+=target.vel;
+		}
+		TNT1 A 1;
+		Stop;
+	}
+}
+Class Q2Gib : EffectBase
+{
+	Default {
+	Projectile;
+	RenderStyle "Normal";
+	-DONTSPLASH -NOINTERACTION -NOGRAVITY +DOOMBOUNCE +MOVEWITHSECTOR -NOBLOCKMAP +INTERPOLATEANGLES
+	BounceFactor 0.5;
+	BounceCount 2;
+	Speed 10;
+	Scale 1.5; }
+	Int UAngle;
+	States
+	{
+	Spawn:
+		TNT1 A 0;
+		TNT1 A 0 { UAngle=Random(6,20)*RandomPick(-1,1); }
+		Goto Decide;
+	Decide:
+		NULL ABC 0 A_Jump(64,"Flying");
+		Loop;
+	Flying:
+		"----" AAA 0 A_SpawnItemEx("Q2GibTrail",FRandom(0,8),0,FRandom(-8,8),FRandom(0,0.25),0,-0.33,Random(1,360));
+		"----" A 0 A_SetPitch(Pitch+UAngle);
+		"----" A 1 A_SetAngle(Angle+UAngle);
+		Loop;
+	Death:
+		"----" A 700;
+		"----" A 35 A_CheckSight("Null");
+		Wait;
+	}
+}
+Class Q2GibTrail : Q2BulletPuffParticle
+{
+	Default { Translation "80:100=[255,128,0]:[255,0,0]", "101:111=[255,0,0]:[98,0,0]"; }
+	States
+	{
+	Fade:
+		"----" A 20;
+		"----" A 1 A_FadeOut;
+		Wait;
+	}
+}
+Class Q2Explosion : EffectBase
+{
+	Default {
+	RenderStyle "Translucent";
+	+BRIGHT }
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_SetAngle(Random(1,360));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2ExplosionParticle",0,0,Random(0,15),FRandom(-5,5),Random(-5,5),Random(-5,5));
+	Decide:
+		TNT1 A 0 A_Jump(256,"Spawn1","Spawn2","Spawn3");
+		Stop;
+	Spawn1:
+		XPL0 AB 3 Light("Explosion_X1");
+		XPL0 CD 3 Light("Explosion_X2");
+		XPL0 EF 3 Light("Explosion_X3");
+		XPL0 GH 3 Light("Explosion_X4");
+		XPL0 IJ 3 Light("Explosion_X5") A_FadeOut(0.16);
+		XPL0 KL 3 Light("Explosion_X6") A_FadeOut(0.16);
+		XPL0 MN 3 Light("Explosion_X7") A_FadeOut(0.16);
+		Stop;
+	Spawn2:
+		XPL1 AB 3 Light("Explosion_X1");
+		XPL1 CD 3 Light("Explosion_X2");
+		XPL1 EF 3 Light("Explosion_X3");
+		XPL1 GH 3 Light("Explosion_X4");
+		XPL1 IJ 3 Light("Explosion_X5") A_FadeOut(0.16);
+		XPL1 KL 3 Light("Explosion_X6") A_FadeOut(0.16);
+		XPL1 MNO 3 Light("Explosion_X7") A_FadeOut(0.16);
+		Stop;
+	Spawn3:
+		TNT1 A 0 A_CheckFloor(1);
+		Goto Decide;
+		XPL2 ABC 2 Light("Explosion_X1");
+		XPL2 DEF 3 Light("Explosion_X2");
+		XPL2 GHI 2 Light("Explosion_X3");
+		XPL2 JKL 3 Light("Explosion_X4");
+		XPL2 MNO 2 Light("Explosion_X5") A_FadeOut(0.16);
+		XPL2 OP 3 Light("Explosion_X6") A_FadeOut(0.16);
+		XPL2 QRS 2 Light("Explosion_X7") A_FadeOut(0.16);
+		Stop;
+	}
+}
+Class Q2ExplosionParticle : Q2BulletPuffParticle
+{
+	Default {
+	Translation "80:111=208:223";
+	Scale 1; }
+	States
+	{
+	Fade:
+		"----" A 0 A_Jump(128,3,4,5);
+		"----" AAAAA 4 Bright;
+		Stop;
+	}
+}
+Class GreenPuff : EffectBase
+{
+	Default {
+	+DONTTRANSLATE
+	Translation "80:95=[255,255,0]:[0,255,0]", "96:111=[0,255,0]:[0,32,0]";
+	Scale 1; }
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_PlaySound("Weapons/LaserHit");
+		TNT1 AAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticleAdd",FRandom(0,5),0,FRandom(-5,5),FRandom(0,0.5),0,FRandom(-1,-0.1),Random(1,360),1|SXF_TRANSFERSCALE);
+		Stop;
+	}
+}
+Class GreenPuffNoSnd : GreenPuff { States { Spawn: Goto Super::Spawn+1; } }
+Class Q2BulletPuffParticleAdd : Q2BulletPuffParticle { Default { RenderStyle "Add"; } } // cuz SXF_TRANSFERRENDERSTYLE flag does not work in zandronum 3.0
+Class Q2TeleportFog : TeleportFog Replaces TeleportFog
+{
+	Default {
+	+NOINTERACTION +CLIENTSIDEONLY
+	Translation "80:101=[255,255,0]:[0,255,0]", "102:111=[0,255,0]:[0,64,0]";
+	Scale 1.1; }
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_JumpIfCloser(64,2);
+		TNT1 A 0 A_Jump(256,2);
+		TNT1 A 0 A_Warp(AAPTR_TARGET,0,0,0,0,WARPF_NOCHECKPOSITION);
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticleAdd",Random(0,24),0,Random(0,64),FRandom(0,1),0,FRandom(-2,0),Random(1,360),1|SXF_TRANSFERSCALE);
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticleAdd",Random(0,24),0,Random(0,64),FRandom(0,1),0,FRandom(-2,0),Random(1,360),1|SXF_TRANSFERSCALE);
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticleAdd",Random(0,24),0,Random(0,64),FRandom(0,1),0,FRandom(-2,0),Random(1,360),1|SXF_TRANSFERSCALE);
+		TNT1 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 0 A_SpawnItemEx("Q2BulletPuffParticleAdd",Random(0,24),0,Random(0,64),FRandom(0,1),0,FRandom(-2,0),Random(1,360),1|SXF_TRANSFERSCALE,128);
+		Stop;
+	}
+}
+Class HUDLowHP : InvBoolean {}
+Class HUDHPDown : InvBoolean {}
+Class HUDArmorDown : InvBoolean {}
+Class wea : Q2BulletPuffParticle
+{
+	Default {
+	+NOTIMEFREEZE Scale 2; }
+	Int UOffset[3];
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay A_Warp(AAPTR_TARGET,UOffset[0],UOffset[1],UOffset[2],0,WARPF_NOCHECKPOSITION);
+		Goto Super::Spawn;
+	}
+}
+
+
+class Q2StuffLib : Actor
+{
+	static vector2 FaceVector(vector3 source, vector3 dest)
+	{
+		double xx=source.x - dest.x;
+		double yy=source.y - dest.y;
+		double zz=source.z - dest.z;
+		double a=VectorAngle(xx,yy);
+		double p=-VectorAngle(sqrt((xx*xx)+(yy*yy)),zz);
+		Return (a,p);
+	}
+	static double VectorLength(vector3 source, vector3 dest, bool usez=true)
+	{
+		If(usez)
+		Return sqrt(
+		(source.x - dest.x) * (source.x - dest.x) +
+		(source.y - dest.y) * (source.y - dest.y) +
+		(source.z - dest.z) * (source.z - dest.z));
+		Return sqrt(
+		(source.x - dest.x) * (source.x - dest.x) +
+		(source.y - dest.y) * (source.y - dest.y));
+	}
+	static Vector3 Vec3ToDir(Double Speed, Double Angle, Double Pitch)
+	{
+		Return (
+		(Cos(Angle)*Speed)*Cos(Pitch),
+		(Sin(Angle)*Speed)*Cos(Pitch),
+		Sin(-Pitch)*Speed);
+	}
+	static bool RandomChance(Int Chance, Int MaxChance=256)
+	{
+		If(Random(0,MaxChance)<=Chance)
+		Return True;
+		Return False;
+	}
+}
+
+Class LightningBeamBase : EffectBase // Based on D4D's lightning effect... in other words: plagiarism. Btw thanks Major Cooke!
+{ // actor also taken from Lambda
+	Default
+	{
+		Height 0;
+		Health 64; // Step Dist
+		Mass 2048; // Max Dist
+		ReactionTime 7; // Random Turn
+		MeleeRange 1; // Step split
+	}
+	int framen;
+	double dist[2];
+	int warpflags;
+	int stepsplit;
+	double segmentsize;
+	vector2 offsetis;
+	Void A_Face()
+	{
+		If(!Tracer)
+		Return;
+		MakeActorFace(Self,Tracer,Height);
+	}
+	Void MakeActorFace(Actor Who, Actor Targ, Double HeightOffs)
+	{
+		If(!Who || !Targ) Return;
+		Vector2 Dir=Q2StuffLib.FaceVector(Targ.Pos+(0,0,HeightOffs),Who.Pos);
+		Who.Angle=Dir.X;
+		Who.Pitch=-Dir.Y;
+	}
+	States
+	{
+	Spawn:
+		TNT1 A 0 NoDelay {
+		SetXYZ(Pos-Vel);
+		dist[1]=int(Min(Mass,GetDistance(1,AAPTR_TRACER)));
+		A_Face();
+		segmentsize=(Health*10000000/64)*0.0000001;
+		If(!bThruActors)
+		{ warpflags=WARPF_NOCHECKPOSITION; }
+		Return A_JumpIf(IsPointerEqual(AAPTR_TRACER,AAPTR_NULL),"Null");
+		}
+	Fly:
+		TNT1 A 0 {
+			A_Face();
+			If(GetDistance(1,AAPTR_TRACER)>Health || dist[0]<dist[1])
+			{
+				Pitch+=FRandom(-ReactionTime,ReactionTime);
+				Angle+=FRandom(-ReactionTime,ReactionTime);
+			}
+			If(GetDistance(1,AAPTR_TRACER)<=Health*2)
+			A_Face();
+			dist[0]+=Health;
+			Return ResolveState("Missile");
+		}
+	Missile:
+		TNT1 A 0
+		{
+			actor diomio;
+			int wea;
+			If(GetDistance(1,AAPTR_TRACER)<Health || dist[0]>dist[1])
+			{ Scale.Y=-(GetDistance(1,AAPTR_TRACER)/Health); Health=-int(Scale.Y); A_Face(); }
+			If(dist[0]>dist[1])
+			{ SetXYZ(Pos-(cos(-pitch)*(Health/MeleeRange),0,sin(pitch)*(Health/MeleeRange))); A_Face(); }
+			[wea, diomio]=A_SpawnItemEx("LightningBeamTrailBase",cos(-pitch)*(Health),0,sin(pitch)*(Health),0,0,0,0,SXF_TRANSFERPITCH|1|SXF_TRANSFERALPHA|SXF_TRANSFERSTENCILCOL);
+			If(diomio)
+			{
+				diomio.A_SetRenderStyle(alpha,GetRenderStyle());
+				diomio.pitch+=90;
+				//if(ticc)
+				diomio.tics=123;
+				if(framen) diomio.frame=framen;
+				diomio.Scale=(Scale.X,Scale.Y*segmentsize);
+				diomio.bNoTimeFreeze=bNoTimeFreeze;
+				diomio.prev=diomio.pos+vel;
+			}
+			If(GetDistance(1,AAPTR_TRACER)<Health)
+			{Return ResolveState("XDeath");}
+			Return ResolveState("Move");
+		}
+		Goto Move;
+	Move:
+		TNT1 A 0 {
+			for(stepsplit=0;stepsplit<MeleeRange;stepsplit++)
+			{
+				If(dist[0]>dist[1] || GetDistance(1,AAPTR_TRACER)<Health)
+				{
+					If(dist[0]>=Mass)
+					{Return ResolveState("Null");}
+					Else{Return ResolveState("XDeath");}
+				}
+				If(!A_Warp(AAPTR_DEFAULT,cos(-pitch)*(Health/MeleeRange),0,sin(pitch)*(Health/MeleeRange),0,warpflags,"Null"))
+				{Return ResolveState("Death");}
+			}
+			Return ResolveState("Fly");
+		}
+
+	Spawn:
+		TNT1 A 0 NoDelay
+		{
+			If(!Tracer) { Destroy(); Return; }
+			SetXYZ(Pos-Vel);
+			dist[1]=Min(Mass,Q2StuffLib.VectorLength(Pos,Tracer.Pos+(0,0,Height)));
+			If(dist[1]<10) { Destroy(); Return; }
+			If(dist[1]<=Health*2) Health=int(dist[1]/2);
+			specialf2=Dist[1]*0.75;
+			A_Face();
+			//A_SpawnParticle("White",SPF_FULLBRIGHT|SPF_RELATIVE,1,20.0);
+		}
+	Fly:
+		TNT1 A 0
+		{
+			////A_SpawnParticle("Green",SPF_FULLBRIGHT|SPF_RELATIVE,1,10.0,0,0,Offsetis.X,0,1);
+			//A_SpawnParticle("Green",SPF_FULLBRIGHT|SPF_RELATIVE,1,10.0);
+			actor target=Spawn("LightningBeamTrailBase",Pos,ALLOW_REPLACE);
+			If(target)
+			{
+				If(lastenemy)
+				{
+					lastenemy.tracer=target;
+				}
+				target.Translation=Translation;
+				target.A_SetRenderStyle(alpha,GetRenderStyle());
+				target.SetShade(FillColor);
+				//target.pitch+=90;
+				target.frame=framen;
+				if(special1) target.frame=special1;
+				if(special2) target.tics=special2;
+				target.Scale.X=Scale.X;
+				target.bNoTimeFreeze=bNoTimeFreeze;
+				lastenemy=target;
+			}
+			A_Warp(AAPTR_DEFAULT,cos(-pitch)*Health,0,sin(pitch)*Health,0,WARPF_NOCHECKPOSITION);
+			Double DistToTarget=Q2StuffLib.VectorLength(Pos,Tracer.Pos+(0,0,Height));
+			Double DistFromStart=Q2StuffLib.VectorLength(Pos,SpawnPoint);
+			target.SetXYZ(Target.pos+ (   RotateVector((Sin(-Pitch)*Offsetis.Y,Offsetis.X),Angle),Cos(-Pitch)*Offsetis.Y   ));
+			target.prev=target.pos+vel;
+			Vector2 RandomOffs=(FRandom(-ReactionTime,ReactionTime),FRandom(-ReactionTime,ReactionTime));
+			Offsetis+=RandomOffs*0.5;
+			//Offsetis+=(0,5);
+			If(DistToTarget<=dist[1]*0.33)
+			{
+				//A_SpawnParticle("Blue",SPF_FULLBRIGHT|SPF_RELATIVE,1,20.0);
+				Double Restante=DistFromStart-dist[1]*0.33;
+				Double Factor=DistToTarget/(dist[1]*0.33);
+				//a_logfloat(factor);
+				OFfsetis*=Factor;
+			}
+
+			If(DistToTarget<=Health || DistFromStart>Mass)
+			{
+				//If(DistToTarget<=Health)
+				SetXYZ(Tracer.Pos+(0,0,Height));
+				//A_SpawnParticle("Yellow",SPF_FULLBRIGHT|SPF_RELATIVE,1,15.0);
+				If(target)
+				{
+					target.tracer=self;
+				}
+				SetStateLabel("Ded");
+				Return;
+			}
+		}
+		Loop;
+	Ded:
+		TNT1 A 1;
+		Stop;
+	XDeath:
+		TNT1 A 0 {A_Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION);
+		Return ResolveState("XDeathAnim");}
+		Stop;
+	Death:
+		TNT1 A 0 {A_Warp(AAPTR_TRACER,0,0,0,0,WARPF_NOCHECKPOSITION);
+		Return ResolveState("DeathAnim");}
+		Stop;
+	XDeathAnim:
+	DeathAnim:
+		TNT1 A 0;
+		Stop;
+	}
+}
+Class LightningBeamTrailBase : EffectBase
+{
+	Default
+	{
+		Height 0;
+		-INTERPOLATEANGLES
+	}
+	Override Void PostBeginPlay()
+	{
+		Super.PostBeginPlay();
+		FaceTracer();
+	}
+	Void FaceTracer()
+	{
+		If(!Tracer) Return;
+		A_FaceTracer(0,0,0,0,FAF_BOTTOM);
+		Scale.Y=(Distance3D(tracer)/64);
+		pitch+=90;
+		pitch*=-1;
+		//angle+=180;
+	}
+	States
+	{
+	Spawn:
+		//NULL A 0 NoDelay;
+	//Fade:
+		NULL A 2 NoDelay Bright;
+		Stop;
+	}
+}
+
+#Include "ZScript/Q2Stuff/Player.ZS"
+#Include "ZScript/Q2Stuff/Q2Weapons.ZS"
+#Include "ZScript/Q2Stuff/Q2Items.ZS"
+#Include "ZScript/Q2Stuff/Q2Enemies.ZS"
+#Include "ZScript/Q2Stuff/Q2Marines.ZS"
+#Include "ZScript/Q2Stuff/TRWeapons.ZS"
+#Include "ZScript/Q2Stuff/TRItems.ZS"
+#Include "ZScript/Q2Stuff/TREnemies.ZS"
+#Include "ZScript/Q2Stuff/GZWeapons.ZS"
+#Include "ZScript/Q2Stuff/Spawners.ZS"/*
+#Include "ZScript/Q2Stuff/Decoration.ZS"
+*/
+
+
+// Aqui van los actors placeholder
+
+//Class WeaponFlash : EffectBase {}
+//Class PowerSilencer : InvBoolean {}

@@ -1,0 +1,101 @@
+Model Q2Flyer
+{
+	Path "Models/Monsters/Flyer"
+	Skin 0 "Flyer.png"
+	Model 0 "Flyer.md2"
+	Scale 1.1 1.1 1.1
+	Offset 0 0 22
+	
+	Frame FLR1 A 0 "stand01"
+	Frame FLR1 B 0 "stand03"
+	Frame FLR1 C 0 "stand05"
+	Frame FLR1 D 0 "stand07"
+	Frame FLR1 E 0 "stand09"
+	Frame FLR1 F 0 "stand11"
+	Frame FLR1 G 0 "stand13"
+	Frame FLR1 H 0 "stand15"
+	Frame FLR1 I 0 "stand17"
+	Frame FLR1 J 0 "stand19"
+	Frame FLR1 K 0 "stand21"
+	Frame FLR1 L 0 "stand23"
+	Frame FLR1 M 0 "stand25"
+	Frame FLR1 N 0 "stand27"
+	Frame FLR1 O 0 "stand29"
+	Frame FLR1 P 0 "stand31"
+	Frame FLR1 Q 0 "stand33"
+	Frame FLR1 R 0 "stand35"
+	Frame FLR1 S 0 "stand37"
+	Frame FLR1 T 0 "stand39"
+	Frame FLR1 U 0 "stand41"
+	Frame FLR1 V 0 "stand44"
+	
+	Frame FLR2 A 0 "attak201"
+	Frame FLR2 B 0 "attak202"
+	Frame FLR2 C 0 "attak203"
+	Frame FLR2 D 0 "attak204"
+	Frame FLR2 E 0 "attak205"
+	Frame FLR2 F 0 "attak206"
+	Frame FLR2 G 0 "attak207"
+	Frame FLR2 H 0 "attak208"
+	Frame FLR2 I 0 "attak209"
+	Frame FLR2 J 0 "attak210"
+	Frame FLR2 K 0 "attak211"
+	Frame FLR2 L 0 "attak212"
+	Frame FLR2 M 0 "attak213"
+	Frame FLR2 N 0 "attak214"
+	Frame FLR2 O 0 "attak215"
+	Frame FLR2 P 0 "attak216"
+	Frame FLR2 Q 0 "attak217"
+	
+	Frame FLR3 A 0 "attak101"
+	Frame FLR3 B 0 "attak102"
+	Frame FLR3 C 0 "attak103"
+	Frame FLR3 D 0 "attak104"
+	Frame FLR3 E 0 "attak105"
+	Frame FLR3 F 0 "attak106"
+	Frame FLR3 G 0 "attak107"
+	Frame FLR3 H 0 "attak108"
+	Frame FLR3 I 0 "attak109"
+	Frame FLR3 J 0 "attak110"
+	Frame FLR3 K 0 "attak111"
+	Frame FLR3 L 0 "attak112"
+	Frame FLR3 M 0 "attak113"
+	Frame FLR3 N 0 "attak114"
+	Frame FLR3 O 0 "attak115"
+	Frame FLR3 P 0 "attak116"
+	Frame FLR3 Q 0 "attak117"
+	Frame FLR3 R 0 "attak118"
+	Frame FLR3 S 0 "attak119"
+	Frame FLR3 T 0 "attak120"
+	Frame FLR3 U 0 "attak121"
+	
+	Frame FLR4 A 0 "pain101"
+	Frame FLR4 B 0 "pain102"
+	Frame FLR4 C 0 "pain103"
+	Frame FLR4 D 0 "pain104"
+	Frame FLR4 E 0 "pain105"
+	Frame FLR4 F 0 "pain106"
+	Frame FLR4 G 0 "pain107"
+	Frame FLR4 H 0 "pain108"
+	
+	Frame FLR4 I 0 "pain201"
+	Frame FLR4 J 0 "pain202"
+	Frame FLR4 K 0 "pain203"
+	Frame FLR4 L 0 "pain204"
+	
+	Frame FLR4 M 0 "pain301"
+	Frame FLR4 N 0 "pain302"
+	Frame FLR4 O 0 "pain303"
+	Frame FLR4 P 0 "pain304"
+}
+Model FlyerProjectile
+{
+	AngleOffset 180
+	Path "Models/Projectiles/Laser"
+	Skin 0 "Laser.png"
+	Model 0 "Laser.md2"
+	Scale 1 2 2
+	IGNORETRANSLATION
+	PITCHFROMMOMENTUM
+	FrameIndex NULL A 0 0
+}

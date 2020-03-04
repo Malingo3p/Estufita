@@ -1,0 +1,211 @@
+GameInfo
+{
+	PlayerClasses 		= "Q2Grunt"
+	Titlemusic          = "QUADMIDI"
+	Titlepage           = "Q2INTER"
+	Quitmessages  =
+	"I know you've pressed exit by accident.",
+	"Don't leave yet -- There's an Strogg around that corner!",
+	"I am sure you will be back for more action.",
+	"Did you already locate the Strogg commander that is hidden within the capital palace?",
+	"I hope you have enjoyed this mod!",
+	"Let me guess, now you want to play something more gothic?",
+	"The Earth won't be save till the last Strogg is dead.",
+	"To become last human hope, press n.\n To hand over your weapons and surrender to the Stroggos, press y.", 
+	"I wouldn't leave if I were you.",
+	"I know you've pressed exit by accident.",
+	"Don't leave yet -- There's an Strogg around that corner!",
+	"I am sure you will be back for more action.",
+	"Did you already locate the Strogg commander that is hidden within the capital palace?",
+	"I hope you have enjoyed this mod!",
+	"Let me guess, now you want to play something more gothic?",
+	"The Earth won't be save till the last Strogg is dead.",
+	"To become last human hope, press n.\n To hand over your weapons and surrender to the Stroggos, press y.", 
+	"I wouldn't leave if I were you.",
+	"I know you've pressed exit by accident.",
+	"Don't leave yet -- There's an Strogg around that corner!",
+	"I am sure you will be back for more action.",
+	"Did you already locate the Strogg commander that is hidden within the capital palace?",
+	"I hope you have enjoyed this mod!",
+	"Let me guess, now you want to play something more gothic?",
+	"The Earth won't be save till the last Strogg is dead.",
+	"To become last human hope, press n.\n To hand over your weapons and surrender to the Stroggos, press y.", 
+	"I wouldn't leave if I were you.",
+	"This could be the only Quake II mod where the Silencer is an useful item. So you should enjoy it more.",
+	"Are you getting paid to do this?"
+}
+
+ClearSkills
+
+Skill VeryEasy
+{
+	AutoUseHealth
+	AmmoFactor = 2
+	DamageFactor = 0.5
+	//Aggressiveness = 0.17
+	//MonsterHealth = 0.5
+	//DamageFactor = 0.4
+	EasyBossBrain
+	SpawnFilter = Baby
+	Textcolor = "Grey"
+	Name = "Very Easy"
+	Key = "i"
+	
+	replaceactor = "ZombieMan", "ZombieManReplacer"
+	replaceactor = "ShotgunGuy", "ShotgunGuyReplacer"
+	replaceactor = "DoomImp", "DoomImpReplacer"
+	replaceactor = "ChaingunGuy", "ChaingunGuyReplacer"
+	replaceactor = "Demon", "DemonReplacer"
+	replaceactor = "Spectre", "SpectreReplacer"
+	replaceactor = "Revenant", "RevenantReplacer"
+	replaceactor = "Fatso", "FatsoReplacer"
+	replaceactor = "LostSoul", "LostSoulReplacer"
+	replaceactor = "CacoDemon", "CacoDemonReplacer"
+	replaceactor = "PainElemental", "PainElementalReplacer"
+	replaceactor = "Arachnotron", "ArachnotronReplacer"
+	replaceactor = "HellKnight", "HellKnightReplacer"
+	replaceactor = "BaronOfHell", "BaronOfHellReplacer"
+	replaceactor = "Archvile", "ArchVileReplacer"
+	replaceactor = "Cyberdemon", "CyberDemonReplacer"
+	replaceactor = "WolfensteinSS", "WolfensteinSSReplacer"
+	replaceactor = "SpiderMastermind", "SpiderMastermindReplacer"
+}
+
+Skill Easy
+{
+	AmmoFactor = 2
+	EasyBossBrain
+	SpawnFilter = Easy
+	//Aggressiveness = 0.25
+	//MonsterHealth = 0.5
+	//DamageFactor = 0.5
+	Textcolor = "Grey"
+	Name = "Easy"
+	Key = "h"
+	
+	replaceactor = "ZombieMan", "ZombieManReplacer"
+	replaceactor = "ShotgunGuy", "ShotgunGuyReplacer"
+	replaceactor = "DoomImp", "DoomImpReplacer"
+	replaceactor = "ChaingunGuy", "ChaingunGuyReplacer"
+	replaceactor = "Demon", "DemonReplacer"
+	replaceactor = "Spectre", "SpectreReplacer"
+	replaceactor = "Revenant", "RevenantReplacer"
+	replaceactor = "Fatso", "FatsoReplacer"
+	replaceactor = "LostSoul", "LostSoulReplacer"
+	replaceactor = "CacoDemon", "CacoDemonReplacer"
+	replaceactor = "PainElemental", "PainElementalReplacer"
+	replaceactor = "Arachnotron", "ArachnotronReplacer"
+	replaceactor = "HellKnight", "HellKnightReplacer"
+	replaceactor = "BaronOfHell", "BaronOfHellReplacer"
+	replaceactor = "Archvile", "ArchVileReplacer"
+	replaceactor = "Cyberdemon", "CyberDemonReplacer"
+	replaceactor = "WolfensteinSS", "WolfensteinSSReplacer"
+	replaceactor = "SpiderMastermind", "SpiderMastermindReplacer"
+}
+
+Skill Normal
+{
+	AmmoFactor = 2
+	SpawnFilter = Normal
+	//FastMonsters
+	//Aggressiveness = 0.25
+	//MonsterHealth = 0.5
+	//DamageFactor = 0.5
+	Key = "h"
+	Textcolor = "Grey"
+	Name = "Medium"
+	DefaultSkill
+	
+	replaceactor = "ZombieMan", "ZombieManReplacer"
+	replaceactor = "ShotgunGuy", "ShotgunGuyReplacer"
+	replaceactor = "DoomImp", "DoomImpReplacer"
+	replaceactor = "ChaingunGuy", "ChaingunGuyReplacer"
+	replaceactor = "Demon", "DemonReplacer"
+	replaceactor = "Spectre", "SpectreReplacer"
+	replaceactor = "Revenant", "RevenantReplacer"
+	replaceactor = "Fatso", "FatsoReplacer"
+	replaceactor = "LostSoul", "LostSoulReplacer"
+	replaceactor = "CacoDemon", "CacoDemonReplacer"
+	replaceactor = "PainElemental", "PainElementalReplacer"
+	replaceactor = "Arachnotron", "ArachnotronReplacer"
+	replaceactor = "HellKnight", "HellKnightReplacer"
+	replaceactor = "BaronOfHell", "BaronOfHellReplacer"
+	replaceactor = "Archvile", "ArchVileReplacer"
+	replaceactor = "Cyberdemon", "CyberDemonReplacer"
+	replaceactor = "WolfensteinSS", "WolfensteinSSReplacer"
+	replaceactor = "SpiderMastermind", "SpiderMastermindReplacer"
+}
+
+Skill Hard
+{   
+    //FastMonsters
+	AmmoFactor = 2
+	SpawnFilter = Hard
+	//Aggressiveness = 0.25
+	//MonsterHealth = 0.5
+	//DamageFactor = 1
+	TextColor = "Grey"
+	Name = "Hard"
+	MustConfirm = "At id, they play Hard skill, and they think you should too, once you are ready."
+	// Quake II manual reference
+	Key = "u"
+	
+	replaceactor = "ZombieMan", "ZombieManReplacer"
+	replaceactor = "ShotgunGuy", "ShotgunGuyReplacer"
+	replaceactor = "DoomImp", "DoomImpReplacer"
+	replaceactor = "ChaingunGuy", "ChaingunGuyReplacer"
+	replaceactor = "Demon", "DemonReplacer"
+	replaceactor = "Spectre", "SpectreReplacer"
+	replaceactor = "Revenant", "RevenantReplacer"
+	replaceactor = "Fatso", "FatsoReplacer"
+	replaceactor = "LostSoul", "LostSoulReplacer"
+	replaceactor = "CacoDemon", "CacoDemonReplacer"
+	replaceactor = "PainElemental", "PainElementalReplacer"
+	replaceactor = "Arachnotron", "ArachnotronReplacer"
+	replaceactor = "HellKnight", "HellKnightReplacerHard"
+	replaceactor = "BaronOfHell", "BaronOfHellReplacerHard"
+	replaceactor = "Archvile", "ArchVileReplacerHard"
+	replaceactor = "Cyberdemon", "CyberDemonReplacer"
+	replaceactor = "WolfensteinSS", "WolfensteinSSReplacerHard"
+	replaceactor = "SpiderMastermind", "SpiderMastermindReplacerHard"
+}
+
+Skill Nightmare
+{
+	AmmoFactor = 2
+	FastMonsters
+	DisableCheats
+	//Aggressiveness = 0.666
+	//MonsterHealth = 1.1
+	//DamageFactor = 1.3
+	RespawnTime = 35
+	SpawnFilter = Nightmare
+	Name = "" // Vanilla Quake II didn't have a way to select this difficulty, so this is the way it can be hidden
+	MustConfirm
+	Key = "n"
+	MustConfirm = "You don't want to play this."
+	replaceactor = "ZombieMan", "ZombieManReplacer"
+	replaceactor = "ShotgunGuy", "ShotgunGuyReplacer"
+	replaceactor = "DoomImp", "DoomImpReplacer"
+	replaceactor = "ChaingunGuy", "ChaingunGuyReplacer"
+	replaceactor = "Demon", "DemonReplacer"
+	replaceactor = "Spectre", "SpectreReplacer"
+	replaceactor = "Revenant", "RevenantReplacer"
+	replaceactor = "Fatso", "FatsoReplacer"
+	replaceactor = "LostSoul", "LostSoulReplacer"
+	replaceactor = "CacoDemon", "CacoDemonReplacer"
+	replaceactor = "PainElemental", "PainElementalReplacer"
+	replaceactor = "Arachnotron", "ArachnotronReplacer"
+	replaceactor = "HellKnight", "HellKnightReplacerHard"
+	replaceactor = "BaronOfHell", "BaronOfHellReplacerHard"
+	replaceactor = "Archvile", "ArchVileReplacerHard"
+	replaceactor = "Cyberdemon", "CyberDemonReplacer"
+	replaceactor = "WolfensteinSS", "WolfensteinSSReplacerHard"
+	replaceactor = "SpiderMastermind", "SpiderMastermindReplacerHard"
+}
+
+GameInfo
+{
+	DimColor = "00 00 00"
+	DimAmount = 0.75
+}
