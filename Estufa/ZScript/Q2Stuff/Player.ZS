@@ -16,11 +16,13 @@ Class Q2Grunt : DoomPlayer
 	}
 	Bool Crouchie()
 	{
+		If(!Player) Return False;
 		If(player.crouchfactor<0.75) Return True;
 		Return False;
 	}
 	Virtual Void A_CheckSprite(String AnimID, StateLabel CrouchState=Null, StateLabel StandState=Null)
 	{
+		If(!Player) Return;
 		//static const array<name> 
 		String Letter="B";
 		Let Weap=Q2Weapon(Player.ReadyWeapon);

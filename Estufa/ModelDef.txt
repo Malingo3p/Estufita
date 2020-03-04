@@ -16,7 +16,8 @@
 #Include "MDef/Makron.md"
 #Include "MDef/Ranger.md"
 #Include "MDef/USMC.md"
-#Include "MDef/Grunt.md"
+
+#Include "MDef/P_Grunt.md"
 
 #Include "MDef/Gore.md"
 #Include "MDef/Explosions.md"
