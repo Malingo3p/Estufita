@@ -1,6 +1,0 @@
-//ClearPlayerClasses
-//AddPlayerClass Q2Grunt
-//AddPlayerClass Q2Major
-//AddPlayerClass Q2Cipher
-//AddPlayerClass Q2Viper
-Alias Wave "PukeName Q2TauntScript %1"

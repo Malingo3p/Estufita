@@ -1,6 +1,0 @@
-Server bool q2_balanceweaps = false;
-Server bool q2_barrelanim = true;
-Server bool q2_barrelinstant = false;
-Server int q2_dropchance = 33;
-Server bool q2_nosmoothmonsters = false;
-Server bool q2_addadrenhealth = true;
