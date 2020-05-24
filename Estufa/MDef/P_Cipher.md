@@ -1,8 +1,8 @@
-Model Q2Grunt
+Model Q2Cipher
 {
 	Path "Models/Player/Male"
 	Model 0 "Player.md2"
-	Skin 0 "Grunt.png"
+	Skin 0 "Cipher.png"
 	ZOffset 24
 	Scale 1.22 1.22 1.22
 	

@@ -1293,3 +1293,65 @@ Model TrapHealth
 	ZOffset 15
 	FrameIndex BON1 A 0 0
 }
+
+Model Q2EFTRifle
+{
+	Path "Models/Weapons/EftRifle"
+	Skin 0 "vEftRifle.png"
+	Model 0 "vEftRifle.md2"
+	Scale -1 1 1
+
+	Frame EFTA A 0 "active01"
+	Frame EFTA B 0 "active02"
+	Frame EFTA C 0 "active03"
+	Frame EFTA D 0 "active04"
+	Frame EFTA E 0 "active05"
+
+	Frame EFTP A 0 "pow01a"
+	Frame EFTP B 0 "pow02"
+
+	Frame EFTI A 0 "idle101"
+	Frame EFTI B 0 "idle102"
+	Frame EFTI C 0 "idle103"
+	Frame EFTI D 0 "idle104"
+	Frame EFTI E 0 "idle105"
+	Frame EFTI F 0 "idle106"
+	Frame EFTI G 0 "idle107"
+	Frame EFTI H 0 "idle108"
+	Frame EFTI I 0 "idle109"
+	Frame EFTI J 0 "idle110"
+	Frame EFTI K 0 "idle111"
+	Frame EFTI L 0 "idle112"
+	Frame EFTI M 0 "idle113"
+	Frame EFTI N 0 "idle114"
+	Frame EFTI O 0 "idle115"
+	Frame EFTI P 0 "idle116"
+	Frame EFTI Q 0 "idle117"
+	Frame EFTI R 0 "idle118"
+	Frame EFTI S 0 "idle119"
+	Frame EFTI T 0 "idle120"
+	Frame EFTI U 0 "idle121"
+	Frame EFTI V 0 "idle122"
+	Frame EFTI W 0 "idle123"
+	Frame EFTI X 0 "idle124"
+	Frame EFTI Y 0 "idle125"
+	Frame EFTI Z 0 "idle126"
+	Frame EFT1 A 0 "idle127"
+	Frame EFT1 B 0 "idle128"
+	Frame EFT1 C 0 "idle129"
+	Frame EFT1 D 0 "idle130"
+
+	Frame EFTW A 0 "putway01"
+	Frame EFTW B 0 "putway02"
+	Frame EFTW C 0 "putway03"
+	Frame EFTW D 0 "putway04"
+
+	Path "Models/Weapons/EftRifle"
+	Skin 0 "EftRifle.png"
+	Model 0 "EftRifle.md2"
+	Scale 1.25 1.25 1.25
+	Offset 0 0 10
+	ROTATING
+
+	FrameIndex EFTR A 0 0
+}
