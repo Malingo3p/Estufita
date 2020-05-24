@@ -33,10 +33,9 @@ Class Q2EFTRifle : Q2Weapon
         EFTW BCD 4;
         Goto InstantDeselect;
     Fire:
-        EFTP A 3;
-        TNT1 A 0 A_FireProjectile("SNGNail",0,1,8,4);
-        EFTP B 3;
-        TNT1 A 0 A_FireProjectile("SNGNail",0,1,3,4);
+        EFTP A 3 A_FireProjectile("SNGNail",0,1,8,4);
+        EFTP B 4 A_FireProjectile("SNGNail",0,1,3,4);
+        EFTP A 0;
         Goto Ready;
 
     }
