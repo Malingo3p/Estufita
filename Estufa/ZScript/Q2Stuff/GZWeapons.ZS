@@ -23,27 +23,59 @@ Class Q2EFTRifle : Q2Weapon
 		EFTA E 4;
 		EFTI A 4 A_WeaponReady;
 		Goto Ready;
+
 	Ready:
-	    TNT1 A 0;
-        EFTI ABCDEFGHIJKLMNOPQRSTUVWXYZ 4 A_WeaponReady;
-        EFT1 ABCD 4 A_WeaponReady;
+		TNT1 A 0 A_Jump(32,2);
+		EFTI A 5 A_WeaponReady;
+		Loop;
+		EFTI ABCDEFG 4 A_WeaponReady;
+		EFTI H Random(4,70) A_WeaponReady;
+		EFTI IJKLMNO 4 A_WeaponReady;
+		EFTI P Random(4,70) A_WeaponReady;
+		EFTI QRSTU 4 A_WeaponReady;
+		EFTI V Random(4,70) A_WeaponReady;
+		EFTI WXYZ 4 A_WeaponReady;
+        EFT1 A Random(4,70) A_WeaponReady;
+		EFT1 BCD 4 A_WeaponReady;
 		Loop;
 	Deselect:
 		EFTW A 2;
 		EFTW BCD 4;
 		Goto InstantDeselect;
 	Fire:
-		EFTP A 3;
-		TNT1 A 0 A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON);
-        TNT1 A 0 A_FireProjectile("SNGNail",0,1,8,4);
-        EFTP B 3;
-		TNT1 A 0 A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON);
-        TNT1 A 0 A_FireProjectile("SNGNail",0,1,3,4);
+		EFTI A 4 { A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON); A_FireProjectile("EFTFlechette",0,1,10,2); A_GunFlash(); }
+	Hold:
+		EFTP A 3 { A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON); A_FireProjectile("EFTFlechette",0,1,6,2); A_GunFlash(); }
+        EFTP B 4 { A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON); A_FireProjectile("EFTFlechette",0,1,10,2); A_GunFlash(); }
+		EFTP A 3 A_ReFire;
+		EFTI A 0;
         Goto Ready;
-        Goto Ready;
+	Flash:
+		TNT1 A 1 A_SetPitch(Pitch-0.66,SPF_INTERPOLATE);
+		TNT1 AA 1 A_SetPitch(Pitch+0.33,SPF_INTERPOLATE);
+		Stop;
 	}
 }
 
+Class EFTFlechette : BlasterProjectile
+{
+	Default
+	{
+		Speed 32;
+		+STRIFEDAMAGE
+	}
+	Override Void Effect() {}
+	States
+	{
+	Spawn:
+		PUFF A -1 Bright;
+		Loop;
+	Death:
+		TNT1 A 0 A_SpawnItem("BlueProjectileImpact",0,0,0,1);
+		Stop;
+	}
+}
+Class BlueProjectileImpact : BlasterProjectileImpact { Default { Translation "80:111=[0,140,170]:[0,3,4]"; } }
 Class Q2PlasmaBeamer : Q2Weapon
 {
 	Default {

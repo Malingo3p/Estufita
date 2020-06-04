@@ -1355,3 +1355,37 @@ Model Q2EFTRifle
 
 	FrameIndex EFTR A 0 0
 }
+
+Model EFTFlechette
+{
+	Path "Models/Projectiles/Flechette"
+	Model 0 "Flechette.md2"
+	Skin 0 "Flechette.png"
+	Scale 1 1 1
+	PITCHFROMMOMENTUM
+
+	FrameIndex PUFF A 0 0
+}
+
+Model BlueProjectileImpact
+{
+	Path "Models/Effects/Impact"
+	Skin 0 "BlueImpact.png"
+	Model 0 "BlasterImpact.md2"
+	IGNORETRANSLATION
+	Scale 0.66 0.66 0.66
+
+	FrameIndex NULL A 0 0
+	FrameIndex NULL B 0 1
+	FrameIndex NULL C 0 2
+	FrameIndex NULL D 0 3
+
+	Scale 0.66 0.66 0.66
+	AngleOffset -90
+	RollOffset 90
+
+	FrameIndex NULL E 0 0
+	FrameIndex NULL F 0 1
+	FrameIndex NULL G 0 2
+	FrameIndex NULL H 0 3
+}
