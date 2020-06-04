@@ -41,6 +41,14 @@ Model Q2ShellPickupSmall
 	ZOffset 6.5
 	FrameIndex SBOX A 0 0
 }
+Model Q2FlachetteAmmo
+{
+	Path "Models/Ammo"
+	Model 0 "FlachetteAmmo.md2"
+	Skin 0 "FlachetteAmmo.png"
+	ZOffset 14
+	FrameIndex FLCA A 0 0
+}
 Model Q2Bullets
 {
 	Path "Models/Ammo"

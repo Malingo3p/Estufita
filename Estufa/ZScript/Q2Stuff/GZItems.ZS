@@ -1,13 +1,16 @@
-Actor Q2Goggles : Infrared  // WIP
+Class Q2FlachetteAmmo : Ammo
 {
-+INVENTORY.INVBAR
-Inventory.Amount 1
-Inventory.MaxAmount 2
-Inventory.PickupMessage "Goggles"
-Inventory.Icon ""
-States
-{
-  Spawn:
-    GOGG A -1
-	Stop
-}}
+	Default {
+	Inventory.PickupMessage "Flachettes.";
+	Inventory.Amount 50;
+	Inventory.MaxAmount 200;
+	Ammo.BackPackAmount 5;
+	Ammo.BackPackMaxAmount 100;
+	Inventory.Icon "A_FLECHS"; }
+	States
+	{
+	Spawn:
+		FLCA A -1;
+		Stop;
+	}
+}

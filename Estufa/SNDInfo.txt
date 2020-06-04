@@ -50,6 +50,8 @@ World/Ricochet1	RIC1
 World/Ricochet2	RIC2
 World/Ricochet3	RIC3
 
+Weapons/EFTRifleFire				NAIL1
+
 Weapons/PhalanxShot			PLASSHOT
 Weapons/PhalanxExpl			PLASEXPL
 Weapons/RipperFire			RIPPFIRE

@@ -613,6 +613,7 @@ Class LightningBeamTrailBase : EffectBase
 #Include "ZScript/Q2Stuff/TRWeapons.ZS"
 #Include "ZScript/Q2Stuff/TRItems.ZS"
 #Include "ZScript/Q2Stuff/TREnemies.ZS"
+#Include "ZScript/Q2Stuff/GZItems.ZS"
 #Include "ZScript/Q2Stuff/GZWeapons.ZS"
 #Include "ZScript/Q2Stuff/Spawners.ZS"/*
 #Include "ZScript/Q2Stuff/Decoration.ZS"

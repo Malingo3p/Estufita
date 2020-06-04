@@ -1,44 +1,47 @@
 Class Q2EFTRifle : Q2Weapon
 {
-    Default {
-    Tag "EFT Rifle";
-    Inventory.PickupMessage "$GOTSHOTGUN";
-    Q2Weapon.SkinID "B";
-    Weapon.SelectionOrder 300;
-    Weapon.AmmoType "Q2Shell";
-    Weapon.AmmoUse 1;
-    Weapon.SlotNumber 2;
-    Weapon.AmmoGive 4;
-    Inventory.Icon "W_PHLNX"; }
-    States
-    {
-    Spawn:
-        EFTR A -1;
-        Stop;
-    Raise:
-        EFTA A 4;
-        EFTA B 3;
-        EFTA C 4;
-        EFTA D 3;
-        EFTA E 4;
-        EFTI A 4 A_WeaponReady;
-        Goto Ready;
-    Ready:
-        TNT1 A 0;
+	Default {
+	Tag "EFT Rifle";
+	Inventory.PickupMessage "$GOTSHOTGUN";
+	Q2Weapon.SkinID "B";
+	Weapon.SelectionOrder 300;
+	Weapon.AmmoType "Q2FlachetteAmmo";
+	Weapon.AmmoUse 1;
+	Weapon.SlotNumber 4;
+	Weapon.AmmoGive 4;
+	Inventory.Icon "W_EFT"; }
+	States
+	{
+	Spawn:
+		EFTR A -1;
+		Stop;
+	Raise:
+		EFTA A 4;
+		EFTA B 3;
+		EFTA C 4;
+		EFTA D 3;
+		EFTA E 4;
+		EFTI A 4 A_WeaponReady;
+		Goto Ready;
+	Ready:
+	    TNT1 A 0;
         EFTI ABCDEFGHIJKLMNOPQRSTUVWXYZ 4 A_WeaponReady;
         EFT1 ABCD 4 A_WeaponReady;
-        Loop;
-    Deselect:
-        EFTW A 2;
-        EFTW BCD 4;
-        Goto InstantDeselect;
-    Fire:
-        EFTP A 3 A_FireProjectile("SNGNail",0,1,8,4);
-        EFTP B 4 A_FireProjectile("SNGNail",0,1,3,4);
-        EFTP A 0;
+		Loop;
+	Deselect:
+		EFTW A 2;
+		EFTW BCD 4;
+		Goto InstantDeselect;
+	Fire:
+		EFTP A 3;
+		TNT1 A 0 A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON);
+        TNT1 A 0 A_FireProjectile("SNGNail",0,1,8,4);
+        EFTP B 3;
+		TNT1 A 0 A_PlaySound("Weapons/EFTRifleFire",CHAN_WEAPON);
+        TNT1 A 0 A_FireProjectile("SNGNail",0,1,3,4);
         Goto Ready;
-
-    }
+        Goto Ready;
+	}
 }
 
 Class Q2PlasmaBeamer : Q2Weapon
